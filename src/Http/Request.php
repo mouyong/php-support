@@ -15,7 +15,7 @@ class Request
         return rtrim($this->baseUri, '/');
     }
 
-    protected function getRequestUrl(string $url = '')
+    protected function getRequestUrl($url = '')
     {
         return sprintf('%s/%s', $this->getBaseUri(), ltrim($url, '/'));
     }
