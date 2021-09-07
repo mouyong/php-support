@@ -13,8 +13,7 @@
         "ext-openssl": "*",
         "ext-fileinfo": "*",
         "ext-simplexml": "*",
-        "ramsey/uuid": "^3.0|^4.0",
-        "zhenmu/laravel-init-template": "^1.0"
+        "ramsey/uuid": "^3.0|^4.0"
     },
     "autoload": {
         "psr-4": {
