@@ -57,7 +57,7 @@ trait ResponseTrait
 
     public function fail($err_msg = 'unknown error', $err_code = 400, $data = []) {
         if (! \request()->wantsJson()) {
-            return $err_msg;
+            return \response()->make($err_msg, $err_code);
         }
 
         return $this->success($data, $err_msg ?: 'unknown error', $err_code ?: 500);
