@@ -2,27 +2,11 @@
 
 namespace ZhenMu\Support\Traits;
 
+use ZhenMu\Support\Utils\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 trait WebmanResponseTrait
 {
-    public function string2utf8($string = '')
-    {
-        if (empty($string)) {
-            return $string;
-        }
-
-        $encoding_list = [
-            "ASCII",'UTF-8',"GB2312","GBK",'BIG5'
-        ];
-
-        $encode = mb_detect_encoding($string, $encoding_list);
-
-        $string = mb_convert_encoding($string, 'UTF-8', $encode);
-
-        return $string;
-    }
-
     public function success($data = [], $err_msg = 'success', $err_code = 200, $headers = [])
     {
         if (is_string($data)) {
@@ -37,7 +21,7 @@ trait WebmanResponseTrait
             extract($data);
         }
 
-        $err_msg = $this->string2utf8($err_msg);
+        $err_msg = Str::string2utf8($err_msg);
 
         if ($err_code === 200 && ($config_err_code = config('webman-init-template.response.err_code', 200)) !== $err_code) {
             $err_code = $config_err_code;
