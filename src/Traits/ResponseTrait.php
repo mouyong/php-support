@@ -41,7 +41,17 @@ trait ResponseTrait
 
     public function fail($err_msg = 'unknown error', $err_code = 400, $data = []) {
         if (! \request()->wantsJson()) {
-            return \response()->make($err_msg, $err_code);
+            if (!array_key_exists($err_code, Response::$statusTexts)) {
+                throw new \LogicException(sprintf("<b style='color: red;'>$err_code</b> is invalid <b style='color: red;'>http status_code</b> when use HTTP Response. Call in %s::%s", \request()->controller, \request()->action));
+            }
+
+            return \response(
+                $err_msg,
+                $err_code,
+                array_merge([
+                    'Access-Control-Allow-Origin' => '*',
+                ], $headers)
+            );
         }
 
         return $this->success($data, $err_msg ?: 'unknown error', $err_code ?: 500);
@@ -60,7 +70,7 @@ trait ResponseTrait
             if ($e instanceof \Illuminate\Auth\AuthenticationException) {
                 return $this->fail('登录失败，请稍后重试', $e->getCode() ?: config('laravel-init-template.auth.unauthorize_code', 401));
             }
-            
+
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 return $this->fail($e->validator->errors()->first(), Response::HTTP_UNPROCESSABLE_ENTITY);
             }
