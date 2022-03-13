@@ -2,11 +2,17 @@
     "name": "zhenmu/support",
     "description": "Package description here.",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/mouyong/php-support/issues",
+        "source": "https://github.com/mouyong/php-support"
+    },
     "authors": [
         {
             "name": "mouyong",
-            "email": "my242551325@gmail.com"
-        }
+            "email": "my24251325@gmail.com",
+            "homepage": "https://github.com/mouyong",
+            "role": "Creator"
+        },
     ],
     "require": {
         "ext-json": "*",

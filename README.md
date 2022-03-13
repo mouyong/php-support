@@ -1,28 +1,63 @@
-<h1 align="center"> support </h1>
+<h1 style="text-align: center;"> support </h1>
 
-<p align="center"> .</p>
-
-
-## Installing
+## 安装
 
 ```shell
 $ composer require zhenmu/support -vvv
 ```
 
-## Usage
+## 基类创建控制器
 
-TODO
+```php
+./webman plugin:install zhen-mu/support
 
-## Contributing
+or
 
-You can contribute in one of three ways:
+php ./vendor/zhenmu/support/src/scripts/install.php
+```
 
-1. File bug reports using the [issue tracker](https://github.com/zhenmu/support/issues).
-2. Answer questions or fix bugs on the [issue tracker](https://github.com/zhenmu/support/issues).
-3. Contribute new features or update the wiki.
+## 使用
 
-_The code contribution process is not very formal. You just need to make sure that you follow the PSR-0, PSR-1, and PSR-2 coding guidelines. Any new code contributions must be accompanied by unit tests where applicable._
+### 控制器
 
-## License
+1. 通过 `./webman make:controller` 控制器生成后，继承同目录下的 `WebmanBaseController` 基类。
+2. 编写接口时可通过 `$this->success($data = [], $err_code = 200, $messsage = 'success');` 返回正确数据给接口。
+3. 编写接口时可通过 `$this->fail($messsage = '', $err_code = 400);` 返回错误信息给接口。
+4. 在 `support/exception/Handler.php` 的 `render` 函数中，调用 `WebmanResponseTrait` 的 `$this->renderableHandle($request, $exception);` 示例如下：
 
-MIT
+```php
+<?php
+
+namespace support\exception;
+
+use Webman\Http\Request;
+use Webman\Http\Response;
+use Throwable;
+use Webman\Exception\ExceptionHandler;
+use ZhenMu\Support\Traits\WebmanResponseTrait;
+
+/**
+ * Class Handler
+ * @package support\exception
+ */
+class Handler extends ExceptionHandler
+{
+    use WebmanResponseTrait; // 这里需要引入 WebmanResponseTrait
+
+    public $dontReport = [
+        BusinessException::class,
+    ];
+
+    public function report(Throwable $exception)
+    {
+        parent::report($exception);
+    }
+
+    public function render(Request $request, Throwable $exception): Response
+    {
+        return $this->renderableHandle($request, $exception); // 这里进行调用，做了一些错误捕捉
+    }
+}
+```
+
+**注意：头请求未声明此次请求需要返回 json 数据时，`$this->fail($message, $err_code)` 的错误码需要符合 http status_code 响应码**
