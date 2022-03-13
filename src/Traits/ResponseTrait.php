@@ -2,27 +2,11 @@
 
 namespace ZhenMu\Support\Traits;
 
-use Illuminate\Http\Response;
+use ZhenMu\Support\Utils\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 trait ResponseTrait
 {
-    public function string2utf8($string = '')
-    {
-        if (empty($string)) {
-            return $string;
-        }
-
-        $encoding_list = [
-            "ASCII",'UTF-8',"GB2312","GBK",'BIG5'
-        ];
-
-        $encode = mb_detect_encoding($string, $encoding_list);
-
-        $string = mb_convert_encoding($string, 'UTF-8', $encode);
-
-        return $string;
-    }
-
     public function success($data = [], $err_msg = 'success', $err_code = 200, $headers = [])
     {
         if (is_string($data)) {
@@ -37,7 +21,7 @@ trait ResponseTrait
             extract($data);
         }
 
-        $err_msg = $this->string2utf8($err_msg);
+        $err_msg = Str::string2utf8($err_msg);
 
         if ($err_code === 200 && ($config_err_code = config('laravel-init-template.response.err_code', 200)) !== $err_code) {
             $err_code = $config_err_code;
@@ -45,13 +29,13 @@ trait ResponseTrait
 
         $res = compact('err_code', 'err_msg', 'data') + array_filter(compact('meta'));
 
-        return response()->json(
-            $res,
+        return \response(
+            \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE),
             Response::HTTP_OK,
             array_merge([
-                'Access-Control-Allow-Origin' => '*'
-            ], $headers),
-            \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE
+                'Access-Control-Allow-Origin' => '*',
+                'Content-Type' => 'application/json',
+            ], $headers)
         );
     }
 
@@ -76,17 +60,17 @@ trait ResponseTrait
             if ($e instanceof \Illuminate\Auth\AuthenticationException) {
                 return $this->fail('登录失败，请稍后重试', $e->getCode() ?: config('laravel-init-template.auth.unauthorize_code', 401));
             }
-
+            
             if ($e instanceof \Illuminate\Validation\ValidationException) {
-                return $this->fail(head(head($e->errors())), $e->status);
+                return $this->fail($e->validator->errors()->first(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                return $this->fail('404 Data Not Found.', Response::HTTP_NOT_FOUND);
             }
 
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
-                if ($e->getPrevious() instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
-                    return $this->fail('404 Data Not Found.', $e->getStatusCode());
-                }
-
-                return $this->fail('404 Url Not Found.', $e->getStatusCode());
+                return $this->fail('404 Url Not Found.', Response::HTTP_NOT_FOUND);
             }
 
             logger('error', [
@@ -96,7 +80,7 @@ trait ResponseTrait
                 'file_line' => sprintf('%s:%s', $e->getFile(), $e->getLine()),
             ]);
 
-            return $this->fail($e->getMessage(), $e->getCode());
+            return $this->fail($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         };
     }
 }
