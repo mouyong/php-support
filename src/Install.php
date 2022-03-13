@@ -37,7 +37,6 @@ class Install
     public static function installByRelation()
     {
         foreach (static::$pathRelation as $source => $dest) {
-            var_dump($dest, $source);
             if ($pos = strrpos($dest, '/')) {
                 $parent_dir = base_path().'/'.substr($dest, 0, $pos);
                 if (!is_dir($parent_dir)) {
