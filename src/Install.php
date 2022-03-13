@@ -1,4 +1,5 @@
 <?php
+
 namespace Zhenmu\Support;
 
 class Install
@@ -58,7 +59,9 @@ class Install
     {
         foreach (static::$pathRelation as $source => $dest) {
             $path = base_path()."/$dest";
-            static::isBaseController($path);
+            if (static::isBaseController($path)) {
+                continue;
+            }
 
             if (!is_dir($path) && !is_file($path)) {
                 continue;
