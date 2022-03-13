@@ -1,6 +1,6 @@
 <?php
 
-namespace Zhenmu\Support;
+namespace ZhenMu\Support;
 
 class Install
 {
