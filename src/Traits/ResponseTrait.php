@@ -33,7 +33,6 @@ trait ResponseTrait
             \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE),
             Response::HTTP_OK,
             array_merge([
-                'Access-Control-Allow-Origin' => '*',
                 'Content-Type' => 'application/json',
             ], $headers)
         );
@@ -49,7 +48,6 @@ trait ResponseTrait
                 $err_msg,
                 $err_code,
                 array_merge([
-                    'Access-Control-Allow-Origin' => '*',
                 ], $headers)
             );
         }
