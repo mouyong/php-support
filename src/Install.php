@@ -78,7 +78,7 @@ class Install
 
     public static function isBaseController($path)
     {
-        if (strpos($path, 'BaseController')) {
+        if (strpos($path, 'BaseController') !== false) {
             return true;
         }
 
