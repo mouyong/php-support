@@ -1,12 +1,31 @@
 <?php
 
-namespace ZhenMu\Support\Traits;
+namespace App\Traits;
 
-use ZhenMu\Support\Utils\Str;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @see https://github.com/mouyong/php-support/blob/master/src/Traits/ResponseTrait.php
+ */
 trait ResponseTrait
 {
+    public static function string2utf8($string = '')
+    {
+        if (empty($string)) {
+            return $string;
+        }
+
+        $encoding_list = [
+            "ASCII",'UTF-8',"GB2312","GBK",'BIG5'
+        ];
+
+        $encode = mb_detect_encoding($string, $encoding_list);
+
+        $string = mb_convert_encoding($string, 'UTF-8', $encode);
+
+        return $string;
+    }
+
     public function success($data = [], $err_msg = 'success', $err_code = 200, $headers = [])
     {
         if (is_string($data)) {
@@ -21,7 +40,7 @@ trait ResponseTrait
             extract($data);
         }
 
-        $err_msg = Str::string2utf8($err_msg);
+        $err_msg = static::string2utf8($err_msg);
 
         if ($err_code === 200 && ($config_err_code = config('laravel-init-template.response.err_code', 200)) !== $err_code) {
             $err_code = $config_err_code;
@@ -82,7 +101,7 @@ trait ResponseTrait
                 return $this->fail('404 Url Not Found.', Response::HTTP_NOT_FOUND);
             }
 
-            logger('error', [
+            \info('error', [
                 'class' => get_class($e),
                 'code' => $e->getCode(),
                 'message' => $e->getMessage(),
