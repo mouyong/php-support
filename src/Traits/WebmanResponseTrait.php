@@ -69,7 +69,7 @@ trait WebmanResponseTrait
             );
         }
 
-        return $this->success($data, $err_msg ?: 'unknown error', $err_code ?: 500);
+        return $this->success($data, $err_msg ?: 'unknown error', $err_code ?: 500, $headers);
     }
 
     public function reportableHandle(\Throwable $e)
