@@ -4,6 +4,9 @@ namespace ZhenMu\Support\Traits;
 
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @see https://github.com/mouyong/php-support/blob/master/src/Traits/ResponseTrait.php
+ */
 trait WebmanResponseTrait
 {
     public static function string2utf8($string = '')
