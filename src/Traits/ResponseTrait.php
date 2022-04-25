@@ -49,7 +49,7 @@ trait ResponseTrait
         $res = compact('err_code', 'err_msg', 'data') + array_filter(compact('meta'));
 
         return \response(
-            \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE),
+            \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT),
             Response::HTTP_OK,
             array_merge([
                 'Content-Type' => 'application/json',
