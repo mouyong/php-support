@@ -69,6 +69,7 @@ trait ResponseTrait
                 $err_msg,
                 $err_code,
                 array_merge([
+                    'Content-Type' => 'application/json',
                 ], $headers)
             );
         }
