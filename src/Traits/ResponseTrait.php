@@ -61,7 +61,8 @@ trait ResponseTrait
     {
         if (! \request()->wantsJson()) {
             if (!array_key_exists($err_code, Response::$statusTexts)) {
-                throw new \LogicException(sprintf("<b style='color: red;'>$err_code</b> is invalid <b style='color: red;'>http status_code</b> when use HTTP Response. Call in %s::%s", \request()->controller, \request()->action));
+                $err_msg = "err_code $err_code, $err_msg";
+                $err_code = 400;
             }
 
             return \response(
