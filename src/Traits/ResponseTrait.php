@@ -62,7 +62,7 @@ trait ResponseTrait
         if (! \request()->wantsJson()) {
             if (!array_key_exists($err_code, Response::$statusTexts)) {
                 $err_msg = "err_code $err_code, $err_msg";
-                $err_code = 400;
+                $err_code = 500;
             }
 
             return \response(
