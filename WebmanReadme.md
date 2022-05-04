@@ -6,24 +6,15 @@
 $ composer require zhenmu/support -vvv
 ```
 
-## 基类创建控制器
-
-```php
-./webman plugin:install zhen-mu/support
-
-or
-
-php ./vendor/zhenmu/support/src/scripts/install.php
-```
-
 ## 使用
-
-### 控制器
 
 1. 通过 `./webman make:controller` 控制器生成后，继承同目录下的 `WebmanBaseController` 基类。
 2. 编写接口时可通过 `$this->success($data = [], $err_code = 200, $messsage = 'success');` 返回正确数据给接口。
 3. 编写接口时可通过 `$this->fail($messsage = '', $err_code = 400);` 返回错误信息给接口。
-4. 在 `support/exception/Handler.php` 的 `render` 函数中，调用 `WebmanResponseTrait` 的 `$this->renderableHandle($request, $exception);` 示例如下：
+4. 在 `support/exception/Handler.php` 的 `render` 函数中，调用 `WebmanResponseTrait` 的 `$this->renderableHandle($request, $exception);` 示例见下方错误处理。
+
+
+### 控制器
 
 ```php
 <?php
