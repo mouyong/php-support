@@ -60,4 +60,33 @@ class Handler extends ExceptionHandler
 }
 ```
 
-**注意：头请求未声明此次请求需要返回 json 数据时，`$this->fail($message, $err_code)` 的错误码需要符合 http status_code 响应码**
+## 控制器调用
+
+```
+<?php
+
+namespace app\controller;
+
+class DemoController extends WebmanBaseController
+{
+    public function index()
+    {
+        // validate data
+        \validator()->validate(\request(), [
+            'name' => 'required|string',
+            'age' => 'nullable|integer',
+        ]);
+
+        // your logic
+        $error = false;
+        if ($error) {
+            throw new \RuntimeException('error message');
+        }
+
+        return $this->success([
+            'key1' => 'value1',
+            'key2' => 'value2',
+        ]);
+    }
+}
+```
