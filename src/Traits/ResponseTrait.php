@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace ZhenMu\Support\Traits;
 
 use Symfony\Component\HttpFoundation\Response;
 
