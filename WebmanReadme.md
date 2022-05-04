@@ -1,0 +1,63 @@
+<h1 style="text-align: center;"> support </h1>
+
+## 安装
+
+```shell
+$ composer require zhenmu/support -vvv
+```
+
+## 基类创建控制器
+
+```php
+./webman plugin:install zhen-mu/support
+
+or
+
+php ./vendor/zhenmu/support/src/scripts/install.php
+```
+
+## 使用
+
+### 控制器
+
+1. 通过 `./webman make:controller` 控制器生成后，继承同目录下的 `WebmanBaseController` 基类。
+2. 编写接口时可通过 `$this->success($data = [], $err_code = 200, $messsage = 'success');` 返回正确数据给接口。
+3. 编写接口时可通过 `$this->fail($messsage = '', $err_code = 400);` 返回错误信息给接口。
+4. 在 `support/exception/Handler.php` 的 `render` 函数中，调用 `WebmanResponseTrait` 的 `$this->renderableHandle($request, $exception);` 示例如下：
+
+```php
+<?php
+
+namespace support\exception;
+
+use Webman\Http\Request;
+use Webman\Http\Response;
+use Throwable;
+use Webman\Exception\ExceptionHandler;
+use ZhenMu\Support\Traits\WebmanResponseTrait;
+
+/**
+ * Class Handler
+ * @package support\exception
+ */
+class Handler extends ExceptionHandler
+{
+    use WebmanResponseTrait; // 这里需要引入 WebmanResponseTrait
+
+    public $dontReport = [
+        BusinessException::class,
+    ];
+
+    public function report(Throwable $exception)
+    {
+        parent::report($exception);
+    }
+
+    public function render(Request $request, Throwable $exception): Response
+    {
+        return $this->renderableHandle($request, $exception); // 这里进行调用，做了一些错误捕捉
+    }
+}
+```
+
+**注意：头请求未声明此次请求需要返回 json 数据时，`$this->fail($message, $err_code)` 的错误码需要符合 http status_code 响应码**
