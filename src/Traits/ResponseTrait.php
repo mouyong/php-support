@@ -33,6 +33,7 @@ trait ResponseTrait
                 'total' => $paginate->total(),
                 'current_page' => $paginate->currentPage(),
                 'per_page' => $paginate->perPage(),
+                'last_page' => $paginate->lastPage(),
             ],
             'data' => array_map(function ($item) use ($callable) {
                 if ($callable) {
