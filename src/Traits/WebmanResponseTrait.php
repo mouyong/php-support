@@ -25,6 +25,18 @@ trait WebmanResponseTrait
 
         return $string;
     }
+    
+    public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate)
+    {
+        return $this->success([
+            'meta' => [
+                'total' => $paginate->total(),
+                'current_page' => $paginate->currentPage(),
+                'per_page' => $paginate->perPage(),
+            ],
+            'data' => $paginate->items(), 
+        ]);
+    }
 
     public function success($data = [], $err_msg = 'success', $err_code = 200, $headers = [])
     {
