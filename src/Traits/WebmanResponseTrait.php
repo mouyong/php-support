@@ -26,7 +26,7 @@ trait WebmanResponseTrait
         return $string;
     }
     
-    public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate)
+    public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate, ?callable $callable = null)
     {
         return $this->success([
             'meta' => [
@@ -34,7 +34,13 @@ trait WebmanResponseTrait
                 'current_page' => $paginate->currentPage(),
                 'per_page' => $paginate->perPage(),
             ],
-            'data' => $paginate->items(), 
+            'data' => array_map(function ($item) use ($callable) {
+                if ($callable) {
+                    return $callable($item) ?? $item;
+                }
+
+                return $item;
+            }, $paginate->items()), 
         ]);
     }
 
