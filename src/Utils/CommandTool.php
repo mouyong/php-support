@@ -30,6 +30,15 @@ class CommandTool
         return realpath($path);
     }
 
+    public static function formatCommand($command)
+    {
+        if (is_string($command)) {
+            $command = explode(' ', $command);
+        }
+
+        return $command;
+    }
+
     public function createProcess(array $command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
     {
         return tap(new \Symfony\Component\Process\Process(...func_get_args()));
