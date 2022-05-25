@@ -14,13 +14,19 @@ class Tree
      */
     public static function toTree($data = [], $primary = 'id', $parent = 'parent_id', $children = 'children')
     {
+        // data is empty
         if (count($data) === 0) {
+            return [];
+        }
+
+        // parameter missing
+        if (!isset(head($data)[$primary]) || !isset(head($data)[$parent])){
             return [];
         }
 
         $items = array();
         foreach ($data as $v) {
-            $items[$v[$primary]] = $v;
+            $items[@$v[$primary]] = $v;
         }
 
         $tree = array();
