@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Utilities;
+namespace ZhenMu\Support\Utils;
 
-class CollectionUtility
+class Tree
 {
     /**
      * @param array $data
