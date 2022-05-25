@@ -14,7 +14,7 @@ class Tree
      */
     public static function toTree($data = [], $primary = 'id', $parent = 'parent_id', $children = 'children')
     {
-        if (!isset($data[0][$parent])) {
+        if (count($data) === 0) {
             return [];
         }
 
