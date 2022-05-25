@@ -12,7 +12,7 @@ class Tree
      * @return array
      * #
      */
-    public static function toTree($data, $primary = 'id', $parent = 'parent_id', $children = 'children')
+    public static function toTree($data = [], $primary = 'id', $parent = 'parent_id', $children = 'children')
     {
         if (!isset($data[0][$parent])) {
             return [];
