@@ -9,19 +9,19 @@ class Tree
      * @param string $primary
      * @param string $parent
      * @param string $children
-     * @return array
+     * @return null|array
      * #
      */
     public static function toTree($data = [], $primary = 'id', $parent = 'parent_id', $children = 'children')
     {
         // data is empty
         if (count($data) === 0) {
-            return [];
+            return null;
         }
 
         // parameter missing
-        if (!isset(head($data)[$primary]) || !isset(head($data)[$parent])){
-            return [];
+        if (!array_key_exists($primary, head($data)) || !array_key_exists($parent, head($data))){
+            return null;
         }
 
         $items = array();
