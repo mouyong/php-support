@@ -26,6 +26,22 @@ trait WebmanResponseTrait
         return $string;
     }
 
+    public function customPaginate($items, $total, $pageSize = 15)
+    {
+        $paginate = new \Illuminate\Pagination\LengthAwarePaginator(
+            items: $items,
+            total: $total,
+            perPage: $pageSize,
+            currentPage: \request('page'),
+        );
+
+        $paginate
+            ->withPath('/'.\request()->path())
+            ->withQueryString();
+
+        return $this->paginate($paginate);
+    }
+
     public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate, ?callable $callable = null)
     {
         return $this->success([
@@ -43,22 +59,6 @@ trait WebmanResponseTrait
                 return $item;
             }, $paginate->items()), 
         ]);
-    }
-
-    public function customPaginate($items, $total, $pageSize = 15)
-    {
-        $paginate = new \Illuminate\Pagination\LengthAwarePaginator(
-            items: $items,
-            total: $total,
-            perPage: $pageSize,
-            currentPage: \request('page'),
-        );
-
-        $paginate
-            ->withPath('/'.\request()->path())
-            ->withQueryString();
-
-        return $this->paginate($paginate);
     }
 
     public function success($data = [], $err_msg = 'success', $err_code = 200, $headers = [])
@@ -81,6 +81,7 @@ trait WebmanResponseTrait
             $err_code = $config_err_code;
         }
 
+        $data = $data ?: null;
         $res = compact('err_code', 'err_msg', 'data') + array_filter(compact('meta'));
 
         return \response(
