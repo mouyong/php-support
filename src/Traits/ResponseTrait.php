@@ -26,25 +26,6 @@ trait ResponseTrait
         return $string;
     }
 
-    public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate, ?callable $callable = null)
-    {
-        return $this->success([
-            'meta' => [
-                'total' => $paginate->total(),
-                'current_page' => $paginate->currentPage(),
-                'per_page' => $paginate->perPage(),
-                'last_page' => $paginate->lastPage(),
-            ],
-            'data' => array_map(function ($item) use ($callable) {
-                if ($callable) {
-                    return $callable($item) ?? $item;
-                }
-
-                return $item;
-            }, $paginate->items()), 
-        ]);
-    }
-
     public function customPaginate($items, $total, $pageSize = 15)
     {
         $paginate = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -59,6 +40,25 @@ trait ResponseTrait
             ->withQueryString();
 
         return $this->paginate($paginate);
+    }
+
+    public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate, ?callable $callable = null)
+    {
+        return $this->success([
+            'meta' => [
+                'total' => $paginate->total(),
+                'current_page' => $paginate->currentPage(),
+                'page_size' => $paginate->perPage(),
+                'last_page' => $paginate->lastPage(),
+            ],
+            'data' => array_map(function ($item) use ($callable) {
+                if ($callable) {
+                    return $callable($item) ?? $item;
+                }
+
+                return $item;
+            }, $paginate->items()), 
+        ]);
     }
 
     public function success($data = [], $err_msg = 'success', $err_code = 200, $headers = [])
@@ -81,6 +81,7 @@ trait ResponseTrait
             $err_code = $config_err_code;
         }
 
+        $data = $data ?: null;
         $res = compact('err_code', 'err_msg', 'data') + array_filter(compact('meta'));
 
         return \response(
