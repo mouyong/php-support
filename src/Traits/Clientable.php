@@ -18,11 +18,11 @@ trait Clientable
 
     abstract public function getHttpClient();
 
-    abstract public function handleEmptyResponse(?string $content = null);
+    abstract public function handleEmptyResponse(?string $content = null, $response = null);
 
     abstract public function isErrorResponse(): bool;
 
-    abstract public function handleErrorResponse(?string $content = null);
+    abstract public function handleErrorResponse(?string $content = null, array $data = []);
 
     abstract public function hasPaginate(): bool;
 
@@ -41,11 +41,11 @@ trait Clientable
         $result = json_decode($content = $response->getBody()->getContents(), true) ?? [];
 
         if (empty($result)) {
-            $this->handleEmptyResponse($content);
+            $this->handleEmptyResponse($content, $response);
         }
 
         if ($this->isErrorResponse()) {
-            $this->handleErrorResponse($content);
+            $this->handleErrorResponse($content, $result);
         }
 
         return $result;
