@@ -20,7 +20,7 @@ trait Clientable
 
     abstract public function handleEmptyResponse(?string $content = null, ?\Psr\Http\Message\ResponseInterface $response = null);
 
-    abstract public function isErrorResponse(): bool;
+    abstract public function isErrorResponse(array $data): bool;
 
     abstract public function handleErrorResponse(?string $content = null, array $data = []);
 
@@ -36,19 +36,19 @@ trait Clientable
 
     abstract public function getDataList(): static|array|null;
 
-    public function castResponse(\Psr\Http\Message\ResponseInterface $response)
+    public function castResponse($response)
     {
-        $result = json_decode($content = $response->getBody()->getContents(), true) ?? [];
+        $data = json_decode($content = $response->getBody()->getContents(), true) ?? [];
 
-        if (empty($result)) {
+        if (empty($data)) {
             $this->handleEmptyResponse($content, $response);
         }
 
-        if ($this->isErrorResponse()) {
-            $this->handleErrorResponse($content, $result);
+        if ($this->isErrorResponse($data)) {
+            $this->handleErrorResponse($content, $data);
         }
 
-        return $result;
+        return $data;
     }
 
     public function paginate()
