@@ -1,6 +1,11 @@
 <?php
 
-namespace ZhenMu\Support\Traits;
+/*
+ * Fresns (https://fresns.org)
+ * Copyright (C) 2021-Present Jarvis Tang
+ */
+
+namespace Plugins\FresnsEngine;
 
 trait Clientable
 {
@@ -36,12 +41,11 @@ trait Clientable
 
     abstract public function getDataList(): static|array|null;
 
-    protected function castResponse()
+    public function castResponse()
     {
-        $this->result = json_decode($content = $this->response->getBody()->getContents(), true) ?? [];
-        $this->attributes = $this->result;
+        $result = json_decode($content = $this->response->getBody()->getContents(), true) ?? [];
 
-        if (empty($this->result)) {
+        if (empty($result)) {
             $this->handleEmptyResponse($content);
         }
 
@@ -49,7 +53,7 @@ trait Clientable
             $this->handleErrorResponse($content);
         }
 
-        return true;
+        return $result;
     }
 
     public function paginate()
@@ -77,7 +81,9 @@ trait Clientable
     {
         $this->response = $this->getHttpClient()->$method(...$args);
 
-        $this->castResponse();
+        $this->result  = $this->castResponse();
+
+        $this->attributes = $this->result;
 
         return $this;
     }
