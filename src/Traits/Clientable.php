@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Fresns (https://fresns.org)
- * Copyright (C) 2021-Present Jarvis Tang
- */
-
 namespace Plugins\FresnsEngine;
 
 trait Clientable
@@ -41,9 +36,9 @@ trait Clientable
 
     abstract public function getDataList(): static|array|null;
 
-    public function castResponse()
+    public function castResponse($response)
     {
-        $result = json_decode($content = $this->response->getBody()->getContents(), true) ?? [];
+        $result = json_decode($content = $response->getBody()->getContents(), true) ?? [];
 
         if (empty($result)) {
             $this->handleEmptyResponse($content);
@@ -81,7 +76,7 @@ trait Clientable
     {
         $this->response = $this->getHttpClient()->$method(...$args);
 
-        $this->result  = $this->castResponse();
+        $this->result  = $this->castResponse($this->response);
 
         $this->attributes = $this->result;
 
