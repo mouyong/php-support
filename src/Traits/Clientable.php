@@ -18,7 +18,7 @@ trait Clientable
 
     abstract public function getHttpClient();
 
-    abstract public function handleEmptyResponse(?string $content = null, $response = null);
+    abstract public function handleEmptyResponse(?string $content = null, ?\Psr\Http\Message\ResponseInterface $response = null);
 
     abstract public function isErrorResponse(): bool;
 
@@ -36,7 +36,7 @@ trait Clientable
 
     abstract public function getDataList(): static|array|null;
 
-    public function castResponse($response)
+    public function castResponse(\Psr\Http\Message\ResponseInterface $response)
     {
         $result = json_decode($content = $response->getBody()->getContents(), true) ?? [];
 
