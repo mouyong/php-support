@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugins\FresnsEngine;
+namespace ZhenMu\Support\Traits;
 
 trait Clientable
 {
@@ -11,12 +11,15 @@ trait Clientable
 
     protected array $result = [];
 
-    public static function make()
+    public static function make(): static|\GuzzleHttp\Promise\Utils|\GuzzleHttp\Client
     {
         return new static();
     }
 
-    abstract public function getHttpClient();
+    public function getHttpClient()
+    {
+        return new \GuzzleHttp\Client($this->getOptions());
+    }
 
     abstract public function handleEmptyResponse(?string $content = null, ?\Psr\Http\Message\ResponseInterface $response = null);
 
@@ -71,14 +74,42 @@ trait Clientable
         return $paginate;
     }
 
-
     public function __call($method, $args)
     {
-        $this->response = $this->getHttpClient()->$method(...$args);
+        // 异步请求处理
+        if (method_exists(\GuzzleHttp\Promise\Utils::class, $method)) {
+            $results = call_user_func_array([\GuzzleHttp\Promise\Utils::class, $method], $args);
 
-        $this->result  = $this->castResponse($this->response);
+            if (!is_array($results)) {
+                return $results;
+            }
 
-        $this->attributes = $this->result;
+            $data = [];
+            foreach ($results as $key => $promise) {
+                $data[$key] = $this->castResponse($promise);
+            }
+
+            $this->attributes = $data;
+
+            return $this;
+        }
+
+        // 同步请求
+        if (method_exists($this->getHttpClient(), $method)) {
+            $this->response = $this->getHttpClient()->$method(...$args);
+        }
+
+        // 响应结果处理
+        if ($this->response instanceof \GuzzleHttp\Psr7\Response) {
+            $this->result  = $this->castResponse($this->response);
+
+            $this->attributes = $this->result;
+        }
+
+        // 将 promise 请求直接返回
+        if ($this->response instanceof \GuzzleHttp\Promise\Promise) {
+            return $this->response;
+        }
 
         return $this;
     }
