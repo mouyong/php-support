@@ -16,6 +16,20 @@ trait Clientable
         return new static();
     }
 
+    abstract public function getBaseUri(): ?string;
+
+    public function getOptions()
+    {
+        return [
+            'base_uri' => $this->getBaseUri(),
+            'timeout' => 5, // 请求 5s 超时
+            'http_errors' => false,
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ];
+    }
+
     public function getHttpClient()
     {
         return new \GuzzleHttp\Client($this->getOptions());
