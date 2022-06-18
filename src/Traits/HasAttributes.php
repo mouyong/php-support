@@ -35,6 +35,18 @@ trait HasAttributes
     }
 
     /**
+     * Get Attributes.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    /**
      * Set attribute.
      *
      * @param string $attribute
