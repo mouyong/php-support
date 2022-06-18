@@ -24,10 +24,9 @@ trait Arrayable
 
     public function offsetGet(mixed $offset): mixed
     {
-        if ($value = Arr::get($this->attributes, $offset)) {
-            if (is_array($value)) {
-                return static::makeAttribute($value);
-            }
+        $value = Arr::get($this->attributes, $offset);
+        if (is_array($value)) {
+            return static::makeAttribute($value);
         }
 
         return $value ?? null;
