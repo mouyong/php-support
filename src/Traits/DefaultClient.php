@@ -13,7 +13,7 @@ trait DefaultClient
 
     public function handleEmptyResponse(?string $content = null, ?ResponseInterface $response = null)
     {
-        return null;
+        throw new \RuntimeException(sprintf("Request fail , response body is ein class %s", static::class), $response->getStatusCode());
     }
 
     public function isErrorResponse(array $data): bool
