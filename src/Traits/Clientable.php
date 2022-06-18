@@ -103,7 +103,7 @@ trait Clientable
                 $data[$key] = $this->castResponse($promise);
             }
 
-            $this->attributes = $data;
+            $this->setAttributes($data);
 
             return $this;
         }
@@ -117,7 +117,7 @@ trait Clientable
         if ($this->response instanceof \GuzzleHttp\Psr7\Response) {
             $this->result  = $this->castResponse($this->response);
 
-            $this->attributes = static::makeAttribute($this->result);
+            $this->setAttributes($this->result);
         }
 
         // 将 promise 请求直接返回
