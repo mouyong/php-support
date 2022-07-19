@@ -64,7 +64,7 @@ trait WebmanResponseTrait
     public function success($data = [], $err_msg = 'success', $err_code = 200, $headers = [])
     {
         if (is_string($data)) {
-            $err_code = is_string($err_msg) ?: $err_msg;
+            $err_code = is_string($err_msg) ? $err_code : $err_msg;
             $err_msg = $data;
             $data = [];
         }
