@@ -146,7 +146,7 @@ trait ResponseTrait
                 'file_line' => sprintf('%s:%s', $e->getFile(), $e->getLine()),
             ]);
 
-            return $this->fail($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->fail($e->getMessage(), $e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
         };
     }
 }
