@@ -30,7 +30,7 @@ class LaravelCache
         // 使用默认缓存时间
         if (is_callable($cacheTime)) {
             $callable = $cacheTime;
-            $cacheTime = now()->addSeconds(CacheUtility::DEFAULT_CACHE_TIME);
+            $cacheTime = now()->addSeconds(LaravelCache::DEFAULT_CACHE_TIME);
         }
 
         if ($forever) {
@@ -56,6 +56,6 @@ class LaravelCache
      */
     public static function rememberForever(string $cacheKey, callable|Carbon $cacheTime = null, callable $callable = null)
     {
-        return CacheUtility::remember($cacheKey, $cacheTime, $callable, true);
+        return LaravelCache::remember($cacheKey, $cacheTime, $callable, true);
     }
 }
