@@ -23,14 +23,14 @@ class LaravelCache
      */
     public static function remember(string $cacheKey, callable|Carbon $cacheTime = null, callable $callable = null, $forever = false)
     {
-        if (!is_callable($callable)) {
-            return null;
-        }
-
         // 使用默认缓存时间
         if (is_callable($cacheTime)) {
             $callable = $cacheTime;
             $cacheTime = now()->addSeconds(LaravelCache::DEFAULT_CACHE_TIME);
+        }
+
+        if (!is_callable($callable)) {
+            return null;
         }
 
         if ($forever) {
