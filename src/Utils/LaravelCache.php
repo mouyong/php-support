@@ -21,7 +21,7 @@ class LaravelCache
      * @param  boolean              $forever
      * @return mixed
      */
-    public static function remember(string $cacheKey, callable|Carbon $cacheTime = null, callable $callable = null, $forever = false)
+    public static function remember(string $cacheKey, callable|Carbon|null $cacheTime = null, callable $callable = null, $forever = false)
     {
         // 使用默认缓存时间
         if (is_callable($cacheTime)) {
@@ -54,7 +54,7 @@ class LaravelCache
      * @param  callable|null        $callable
      * @return mixed
      */
-    public static function rememberForever(string $cacheKey, callable|Carbon $cacheTime = null, callable $callable = null)
+    public static function rememberForever(string $cacheKey, callable|Carbon|null $cacheTime = null, callable $callable = null)
     {
         return LaravelCache::remember($cacheKey, $cacheTime, $callable, true);
     }
