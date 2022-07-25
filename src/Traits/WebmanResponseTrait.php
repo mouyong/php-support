@@ -132,6 +132,6 @@ trait WebmanResponseTrait
             return $this->fail('404 Url Not Found.', Response::HTTP_NOT_FOUND);
         }
 
-        return $this->fail($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        return $this->fail($e->getMessage(), $e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
