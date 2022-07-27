@@ -22,7 +22,8 @@
         "ext-fileinfo": "*",
         "ext-simplexml": "*",
         "ramsey/uuid": "*",
-        "symfony/process": "*"
+        "symfony/process": "*",
+        "nelexa/zip": "^4.0"
     },
     "autoload": {
         "files": [
