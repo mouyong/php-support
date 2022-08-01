@@ -14,7 +14,7 @@ class Zip
         $this->zipFile = new ZipFile();
     }
 
-    public function pack(string $sourcePath, ?string $filename = null, ?string $targetPath = null)
+    public function pack(string $sourcePath, ?string $filename = null, ?string $targetPath = null): ?string
     {
         if (!File::exists($sourcePath)) {
             throw new \RuntimeException("待解压目录不存在 {$sourcePath}");
@@ -44,7 +44,7 @@ class Zip
         return $targetPath;
     }
 
-    public function unpack(string $sourcePath, ?string $dirname = null)
+    public function unpack(string $sourcePath, ?string $dirname = null): ?string
     {
         try {
             // 检测文件类型，只有 zip 文件才进行解压操作
