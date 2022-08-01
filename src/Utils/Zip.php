@@ -106,7 +106,7 @@ class Zip
         return null;
     }
 
-    public function ensureDoesntHaveSubdir(string $sourcePath)
+    public function ensureDoesntHaveSubdir(string $sourcePath): string
     {
         $targetPath = $sourcePath ?? storage_path('app/extensions/.tmp');
 
@@ -114,7 +114,7 @@ class Zip
         $files = File::glob($pattern);
 
         if (count($files) > 1) {
-            return false;
+            return $targetPath;
         }
 
         $tmpDir = $targetPath . '-subdir';
