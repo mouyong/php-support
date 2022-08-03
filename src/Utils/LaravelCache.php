@@ -10,7 +10,7 @@ class LaravelCache
     /**
      * 单位 秒
      */
-    const DEFAULT_CACHE_TIME = 3600;
+    const DEFAULT_CACHE_TIME = [1800, 3600, 7200, 14400, 28800, 57600, 86400];
 
     /**
      * 执行指定函数并缓存指定时长
@@ -26,7 +26,10 @@ class LaravelCache
         // 使用默认缓存时间
         if (is_callable($cacheTime)) {
             $callable = $cacheTime;
-            $cacheTime = now()->addSeconds(LaravelCache::DEFAULT_CACHE_TIME);
+
+            // 防止缓存雪崩，对不同数据随机缓存时间。从半小时到 1天
+            $cacheSeconds = rand(0, 100) % count(LaravelCache::DEFAULT_CACHE_TIME);
+            $cacheTime = now()->addSeconds($cacheSeconds);
         }
 
         if (!is_callable($callable)) {
