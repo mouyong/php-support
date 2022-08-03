@@ -37,9 +37,9 @@ class Json
         return $this;
     }
 
-    public function get(?string $key = null, $default = null)
+    public function get(mixed $key = null, $default = null)
     {
-        if (!$key) {
+        if (!array_key_exists($key, $this->data)) {
             return $this->data;
         }
 
