@@ -62,18 +62,15 @@ class LaravelCache
         return LaravelCache::remember($cacheKey, $cacheTime, $callable, true);
     }
 
-    public static function get(string $cacheKey): mixed
+    /**
+     * 转发调用
+     *
+     * @param  mixed $method
+     * @param  mixed $args
+     * @return mixed
+     */
+    public static function __callStatic(mixed $method, mixed $args)
     {
-        return Cache::get($cacheKey);
-    }
-
-    public static function forget(string $cacheKey): bool
-    {
-        return Cache::forget($cacheKey);
-    }
-
-    public static function pull(string $cacheKey): mixed
-    {
-        return Cache::pull($cacheKey);
+        return Cache::$method(...$args);
     }
 }
