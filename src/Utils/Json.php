@@ -56,7 +56,7 @@ class Json
 
     public function get(mixed $key = null, mixed $default = null)
     {
-        if (!array_key_exists($key, $this->data)) {
+        if (!Arr::has($this->data, $key)) {
             return $this->data;
         }
 
