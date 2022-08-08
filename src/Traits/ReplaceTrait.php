@@ -26,7 +26,8 @@ trait ReplaceTrait
                 $replaces[$currentReplacement] = $this->$method();
             } else {
                 \info($currentReplacement . " does match any replace content");
-                $replaces[$currentReplacement] = null;
+                // keep origin content
+                $replaces[$currentReplacement] = $key;
             }
         }
 
