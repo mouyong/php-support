@@ -73,9 +73,7 @@ class Zip
         }
 
         if (!is_dir($targetPath)) {
-            if (!File::ensureDirectoryExists($targetPath)) {
-                throw new \RuntimeException("mkdir {$targetPath} failed.");
-            }
+            File::ensureDirectoryExists($targetPath);
         }
 
         // 清空目录，避免留下其他插件的文件
@@ -118,9 +116,7 @@ class Zip
         }
 
         $tmpDir = $targetPath . '-subdir';
-        if (File::ensureDirectoryExists($tmpDir)) {
-            throw new \RuntimeException("mkdir {$tmpDir} failed.");
-        }
+        File::ensureDirectoryExists($tmpDir);
 
         $firstEntryname = File::name(current($files));
 
