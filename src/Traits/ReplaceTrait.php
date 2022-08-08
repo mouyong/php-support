@@ -32,4 +32,12 @@ trait ReplaceTrait
 
         return $replaces;
     }
+
+    public function getReplacedContent(string $content)
+    {
+        $keys = $this->getReplaceKeys($content);
+        $replaces = $this->getReplacesByKeys($keys);
+
+        return str_replace($keys, $replaces, $content);
+    }
 }
