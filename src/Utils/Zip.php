@@ -44,7 +44,7 @@ class Zip
         return $targetPath;
     }
 
-    public function unpack(string $sourcePath, ?string $dirname = null): ?string
+    public function unpack(string $sourcePath, ?string $targetPath = null): ?string
     {
         try {
             // 检测文件类型，只有 zip 文件才进行解压操作
@@ -104,11 +104,11 @@ class Zip
         return null;
     }
 
-    public function ensureDoesntHaveSubdir(string $sourcePath): string
+    public function ensureDoesntHaveSubdir(string $targetPath): string
     {
-        $targetPath = $sourcePath ?? storage_path('app/extensions/.tmp');
+        $targetPath = $targetPath ?? storage_path('app/extensions/.tmp');
 
-        $pattern = sprintf("%s/*", rtrim($sourcePath, DIRECTORY_SEPARATOR));
+        $pattern = sprintf("%s/*", rtrim($targetPath, DIRECTORY_SEPARATOR));
         $files = File::glob($pattern);
 
         if (count($files) > 1) {
