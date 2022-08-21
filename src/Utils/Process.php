@@ -20,7 +20,9 @@ class Process
         }
 
         try {
-            $output = app(OutputInterface::class);
+            if ($output !== false) {
+                $output = app(OutputInterface::class);
+            }
         } catch (\Throwable $e) {
             $output = $output ?? null;
         }
