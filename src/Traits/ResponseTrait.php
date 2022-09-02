@@ -42,8 +42,14 @@ trait ResponseTrait
         return $this->paginate($paginate);
     }
 
-    public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate, ?callable $callable = null)
+    public function paginate($data, ?callable $callable = null)
     {
+        if (! $data instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            return $this->success($data);
+        }
+
+        $paginate = $data;
+
         return $this->success([
             'meta' => [
                 'total' => $paginate->total(),
