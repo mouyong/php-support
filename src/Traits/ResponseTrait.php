@@ -44,12 +44,24 @@ trait ResponseTrait
 
     public function paginate($data, ?callable $callable = null)
     {
+        // 处理集合数据
+        if ($data instanceof \Illuminate\Database\Eloquent\Collection) {
+            return $this->success(array_map(function ($item) use ($callable) {
+                if ($callable) {
+                    return $callable($item) ?? $item;
+                }
+
+                return $item;
+            }, $data->all()));
+        }
+
+        // 处理非分页数据
         if (! $data instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             return $this->success($data);
         }
 
+        // 处理分页数据
         $paginate = $data;
-
         return $this->success([
             'meta' => [
                 'total' => $paginate->total(),
@@ -63,7 +75,7 @@ trait ResponseTrait
                 }
 
                 return $item;
-            }, $paginate->items()), 
+            }, $paginate?->items()), 
         ]);
     }
 
