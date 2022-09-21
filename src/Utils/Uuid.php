@@ -13,7 +13,7 @@ class Uuid
         return \Ramsey\Uuid\Uuid::uuid4()->toString();
     }
     
-    public static function generateNextSerialNumber(int $serialNumber): string
+    public static function generateNextSerialNumberNo(int $serialNumber): string
     {
         $nextSerialNumber = $serialNumber + 1;
 
