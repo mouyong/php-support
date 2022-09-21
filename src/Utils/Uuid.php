@@ -13,6 +13,11 @@ class Uuid
         return \Ramsey\Uuid\Uuid::uuid4()->toString();
     }
     
+    public static function getCurrentSerialNumber(string $modelClass, $serialNumberField = 'serial_number'): int
+    {
+        return $modelClass::whereDate('created_at', now())->max($serialNumberField) ?? 0;
+    }
+    
     public static function generateNextSerialNumberNo(int $serialNumber): string
     {
         $nextSerialNumber = $serialNumber + 1;
