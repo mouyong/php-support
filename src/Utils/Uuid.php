@@ -18,11 +18,11 @@ class Uuid
         return $modelClass::whereDate('created_at', now())->max($serialNumberField) ?? 0;
     }
     
-    public static function generateNextSerialNumberNo(int $serialNumber): string
+    public static function generateNextSerialNumberNo(int $serialNumber, int $padLength = 3): string
     {
         $nextSerialNumber = $serialNumber + 1;
 
-        $no = str_pad($nextSerialNumber, 3, '0', STR_PAD_LEFT);
+        $no = str_pad($nextSerialNumber, $padLength, '0', STR_PAD_LEFT);
 
         return date('ymd') . $no;
     }
