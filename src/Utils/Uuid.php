@@ -15,7 +15,9 @@ class Uuid
     
     public static function generateNextSerialNumber(int $serialNumber): string
     {
-        $no = str_pad($serialNumber, 3, '0', STR_PAD_LEFT);
+        $nextSerialNumber = $serialNumber + 1;
+
+        $no = str_pad($nextSerialNumber, 3, '0', STR_PAD_LEFT);
 
         return date('ymd') . $no;
     }
