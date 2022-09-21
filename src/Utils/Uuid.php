@@ -12,4 +12,11 @@ class Uuid
 
         return \Ramsey\Uuid\Uuid::uuid4()->toString();
     }
+    
+    public static function generateNextSerialNumber(int $serialNumber): string
+    {
+        $no = str_pad($serialNumber, 3, '0', STR_PAD_LEFT);
+
+        return date('ymd') . $no;
+    }
 }
