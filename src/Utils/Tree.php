@@ -17,7 +17,7 @@ class Tree
         // data is empty
         if (count($data) === 0) {
             return null;
-    }
+        }
 
         // parameter missing
         if (!array_key_exists($primaryId, head($data)) || !array_key_exists($parentId, head($data))){
