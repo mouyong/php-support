@@ -6,6 +6,17 @@ use Carbon\Carbon;
 
 class Excel
 {
+    public static function toArray(array $row, $replaceFlag = ['*'], $targetFlag = '')
+    {
+        $data = [];
+        foreach ($row as $key => $value) {
+            $rowKey = str_replace($replaceFlag, $targetFlag, $key);
+            $data[$rowKey] = $value;
+        }
+
+        return $data;
+    }
+
     public static function datetimeFromCell($datetime = null, $format = 'Y-m-d H:i:s', $soruceFormat = 'Y-m-d H:i:s')
     {
         if (!$datetime) {
