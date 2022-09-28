@@ -11,7 +11,10 @@ class Excel
         $data = [];
         foreach ($row as $key => $value) {
             $rowKey = str_replace($replaceFlag, $targetFlag, $key);
-            $data[$rowKey] = $value;
+
+            $newValue = preg_replace("/=\"(.*)\"/", '\1', $value);
+
+            $data[$rowKey] = $newValue ?: null;
         }
 
         return $data;
