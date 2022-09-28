@@ -89,7 +89,7 @@ class Excel
         $num = 0;
         foreach ($row as $key => $value) {
             $rowKey = str_replace($replaceFlag, $targetFlag, $key);
-            if (!empty($rowKey)) {
+            if (empty($rowKey)) {
                 $rowKey = trim($rowKey);
                 $rowKey = $rowKey ?: $num;
             }
