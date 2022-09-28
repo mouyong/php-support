@@ -84,8 +84,15 @@ class Excel
     public static function toArray(array $row, $replaceFlag = ['*'], $targetFlag = ''): array
     {
         $data = [];
+
+        // num: 兼容表头出现空的情况
+        $num = 0;
         foreach ($row as $key => $value) {
             $rowKey = str_replace($replaceFlag, $targetFlag, $key);
+            if (!empty($rowKey)) {
+                $rowKey = trim($rowKey);
+                $rowKey = $rowKey ?: $num;
+            }
 
             // can be call after handleCalculateSheet, will auto calcute cell value
             // this line is fallback if not call Excel::handleCalculateSheet($event)
@@ -95,6 +102,8 @@ class Excel
             }
 
             $data[$rowKey] = $newValue ?: null;
+
+            $num++;
         }
 
         return $data;
