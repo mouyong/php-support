@@ -79,7 +79,7 @@ class Excel
         return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($datetime)?->format($format);
     }
     
-    public static function ValueToCellString($format = '="%s"', ...$value)
+    public static function valueToCellString($format = '="%s"', ...$value)
     {
         if (!str_starts_with($format, '=')) {
             $value = [$format];
