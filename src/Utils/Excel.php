@@ -299,7 +299,7 @@ class Excel
      * @param  string|array ...$value
      * @return void
      */
-    public static function valueToCellString($format = '="%s"', ...$value)
+    public static function valueToCellString($format = '="%s"', ...$value): string
     {
         if (!str_starts_with($format, '=')) {
             $value = [$format];
