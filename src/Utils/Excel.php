@@ -15,6 +15,7 @@ class Excel
             return;
         }
 
+        // A=65
         $maxCol = ord($sheet->getHighestColumn()) - 64;
         $maxColName = chr($maxCol + 65);
         $maxRow = $sheet->getHighestRow();
@@ -46,6 +47,56 @@ class Excel
 
         info("最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
     }
+
+    public static function handleRequireCellTextColorForRed($event)
+    {
+        $sheet = $event->sheet->getDelegate();
+
+        if (! $sheet instanceof \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet) {
+            return;
+        }
+
+        // A=65
+        $maxCol = ord($sheet->getHighestColumn()) - 64;
+        $maxColName = chr($maxCol + 65);
+        $maxRow = $sheet->getHighestRow();
+
+        foreach (range(0, $maxRow) as $row) {
+            foreach (range(0, $maxCol) as $col) {
+                $colName = chr($col + 65);
+                $cell = "{$colName}{$row}";
+
+                // 设置列宽 autoSize
+                $sheet->getColumnDimension($colName)->setAutoSize(true);
+
+                try {
+                    $calcValue = $sheet->getCell($cell)->getCalculatedValue();
+                    $newValue = $calcValue;
+                } catch (\Throwable $e) {
+                    $value = $sheet->getCell($cell)->getValue();
+
+                    info("获取单元格 {$cell} 计算结果错误", [
+                        'code' => $e->getCode(), 
+                        'message' => $e->getMessage(),
+                        'cell' => $cell,
+                        'origin_value' => $value,
+                    ]);
+
+                    $newValue = $value;
+                }
+
+                $newValue = $sheet->getCell($cell)->getValue();
+
+                if (str_contains($newValue, '*')) {
+                    $sheet->getStyle($cell)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+                }
+                $sheet->getCell($cell)->setValue($newValue);
+            }
+        }
+
+        info("最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
+    }
+
     public static function toArray(array $row, $replaceFlag = ['*'], $targetFlag = '')
     {
         $data = [];
