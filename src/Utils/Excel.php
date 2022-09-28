@@ -79,9 +79,9 @@ class Excel
      * @param  array  $row
      * @param  array  $replaceFlag
      * @param  string $targetFlag
-     * @return void
+     * @return array
      */
-    public static function toArray(array $row, $replaceFlag = ['*'], $targetFlag = '')
+    public static function toArray(array $row, $replaceFlag = ['*'], $targetFlag = ''): array
     {
         $data = [];
         foreach ($row as $key => $value) {
