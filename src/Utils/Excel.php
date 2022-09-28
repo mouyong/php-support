@@ -67,7 +67,7 @@ class Excel
             }
         }
 
-        info("最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
+        info("handleCalculateSheet: 最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
     }
 
     /**
@@ -149,7 +149,7 @@ class Excel
      * @param  Event $event
      * @return void
      */
-    public static function handleRequireCellTextColorForRed(Event $event)
+    public static function handleRequireCellTextColorForRedAndHyperLink(Event $event)
     {
         $sheet = Excel::getSheet($event);
 
@@ -197,7 +197,7 @@ class Excel
             }
         }
 
-        info("最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
+        info("handleRequireCellTextColorForRedAndHyperLink: 最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
     }
 
     /**
