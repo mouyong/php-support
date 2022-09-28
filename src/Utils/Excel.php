@@ -52,6 +52,8 @@ class Excel
         foreach ($row as $key => $value) {
             $rowKey = str_replace($replaceFlag, $targetFlag, $key);
 
+            // can be call after handleCalculateSheet, will auto calcute cell value
+            // this line is fallback if not call Excel::handleCalculateSheet($event)
             $newValue = preg_replace("/=\"(.*)\"/", '\1', $value);
 
             $data[$rowKey] = $newValue ?: null;
