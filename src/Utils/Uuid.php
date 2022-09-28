@@ -2,6 +2,8 @@
 
 namespace ZhenMu\Support\Utils;
 
+use Illuminate\Support\Facades\DB;
+
 class Uuid
 {
     public static function uuid($hex = true)
@@ -15,7 +17,7 @@ class Uuid
     
     public static function getCurrentSerialNumber(string $modelClass, $serialNumberField = 'serial_number'): int
     {
-        return $modelClass::whereDate('created_at', now())->max($serialNumberField) ?? 0;
+        return $modelClass::whereDate('created_at', now())->max(DB::raw("cast({$serialNumberField} as INTEGER)")) ?? 0;
     }
     
     public static function generateNextSerialNumberNo(int $serialNumber, int $padLength = 3): string
