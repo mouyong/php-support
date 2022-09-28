@@ -36,10 +36,11 @@ class Excel
     {
         $sheet = Excel::getSheet($event);
 
+        ['row' => $maxRow, 'column' => $maxColName] = $sheet->getHighestRowAndColumn();
+
         // A=65
-        $maxCol = ord($sheet->getHighestColumn()) - 64;
+        $maxCol = ord($maxColName) - 64;
         $maxColName = chr($maxCol + 65);
-        $maxRow = $sheet->getHighestRow();
 
         foreach (range(0, $maxRow) as $row) {
             foreach (range(0, $maxCol) as $col) {
@@ -140,10 +141,11 @@ class Excel
     {
         $sheet = Excel::getSheet($event);
 
+        ['row' => $maxRow, 'column' => $maxColName] = $sheet->getHighestRowAndColumn();
+
         // A=65
-        $maxCol = ord($sheet->getHighestColumn()) - 64;
+        $maxCol = ord($maxColName) - 64;
         $maxColName = chr($maxCol + 65);
-        $maxRow = $sheet->getHighestRow();
 
         foreach (range(0, $maxRow) as $row) {
             foreach (range(0, $maxCol) as $col) {
