@@ -4,6 +4,8 @@ namespace ZhenMu\Support\Utils;
 
 use Carbon\Carbon;
 use Maatwebsite\Excel\Events\Event;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Excel
@@ -126,6 +128,7 @@ class Excel
 
     /**
      * 带 * 单元格红色标记
+     * 带 :// 添加超链接
      * 
      * call in:
      *      public static function afterSheet(AfterSheet $event)
@@ -144,11 +147,11 @@ class Excel
 
         foreach (range(0, $maxRow) as $row) {
             foreach (range(0, $maxCol) as $col) {
-                $colName = chr($col + 65);
-                $cell = "{$colName}{$row}";
+                $columnLetter = chr($col + 65);
+                $cell = "{$columnLetter}{$row}";
 
                 // 设置列宽 autoSize
-                $sheet->getColumnDimension($colName)->setAutoSize(true);
+                $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
 
                 try {
                     $calcValue = $sheet->getCell($cell)->getCalculatedValue();
@@ -169,8 +172,13 @@ class Excel
                 $newValue = $sheet->getCell($cell)->getValue();
 
                 if (str_contains($newValue ?? '', '*')) {
-                    $sheet->getStyle($cell)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+                    $sheet->getStyle($cell)->getFont()->getColor()->setARGB(Color::COLOR_RED);
                 }
+
+                if (str_contains($newValue ?? '', '://')) {
+                    Excel::cellAddHyperLink($event, $cell);
+                }
+
                 $sheet->getCell($cell)->setValue($newValue);
             }
         }
@@ -219,6 +227,80 @@ class Excel
                 $sheet->setCellValue($cell, $value);
             }
         }
+    }
+
+    /**
+     * 给指定列添加超链接
+     * 
+     * call in:
+     *      public static function afterSheet(AfterSheet $event)
+     *
+     * @param  Event  $event
+     * @param  string $columnLetter
+     * @param  string $tooltip
+     * @return void
+     */
+    public static function hyper(Event $event, string $columnLetter, $tooltip = "查看")
+    {
+        $sheet = Excel::getSheet($event);
+
+        foreach ($sheet->getColumnIterator($columnLetter) as $row) {
+            foreach ($row->getCellIterator() as $cell) {
+                $value = $cell->getValue();
+
+                if (str_contains($value, '://')) {
+                    $cell->setHyperlink(new Hyperlink($value, $tooltip));
+
+                    Excel::cellAddColor($event, $cell);
+                }
+            }
+        }
+    }
+
+    /**
+     * 给指定单元格添加超链接
+     * 
+     * call in:
+     *      public static function afterSheet(AfterSheet $event)
+     *
+     * @param  Event  $event
+     * @param  string $cell
+     * @param  string $tooltip
+     * @return void
+     */
+    public static function cellAddHyperLink(Event $event, string $cell, $tooltip = "查看")
+    {
+        $sheet = Excel::getSheet($event);
+
+        $sheetCell = $sheet->getCell($cell);
+
+        $value = $sheetCell->getValue();
+
+        if (str_contains($value, '://')) {
+            $sheetCell->setHyperlink(new Hyperlink($value, $tooltip));
+
+            Excel::cellAddColor($event, $sheetCell->getCoordinate(), Color::COLOR_BLUE);
+        }
+    }
+
+    /**
+     * 给指定单元格添加颜色
+     * 
+     * call in:
+     *      public static function afterSheet(AfterSheet $event)
+     *
+     * @param  Event  $event
+     * @param  string $cell
+     * @param  [type] $color
+     * @return void
+     */
+    public static function cellAddColor(Event $event, string $cell, $color = Color::COLOR_BLACK)
+    {
+        $sheet = Excel::getSheet($event);
+
+        $sheetCell = $sheet->getCell($cell);
+
+        $sheetCell->getStyle()->getFont()->getColor()->setARGB($color);
     }
 
     /**
@@ -286,7 +368,7 @@ class Excel
     }
 
     /**
-     * 
+     * 单元格数字转文字显示
      * 
      * call in:
      *      public static function afterSheet(AfterSheet $event)
@@ -297,7 +379,7 @@ class Excel
      *
      * @param  string $format
      * @param  string|array ...$value
-     * @return void
+     * @return string
      */
     public static function valueToCellString($format = '="%s"', ...$value): string
     {
