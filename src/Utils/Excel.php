@@ -23,6 +23,13 @@ class Excel
         return $sheet;
     }
 
+    public static function getSheetMaxRowAndColumn(Event $event): array
+    {
+        $sheet = Excel::getSheet($event);
+
+        return $sheet->getHighestRowAndColumn();
+    }
+
     /**
      * 处理导入数据的计算属性
      * 
@@ -36,7 +43,7 @@ class Excel
     {
         $sheet = Excel::getSheet($event);
 
-        ['row' => $maxRow, 'column' => $maxColName] = $sheet->getHighestRowAndColumn();
+        ['row' => $maxRow, 'column' => $maxColName] = Excel::getSheetMaxRowAndColumn($event);
 
         // A=65
         $maxCol = ord($maxColName) - 64;
@@ -153,7 +160,7 @@ class Excel
     {
         $sheet = Excel::getSheet($event);
 
-        ['row' => $maxRow, 'column' => $maxColName] = $sheet->getHighestRowAndColumn();
+        ['row' => $maxRow, 'column' => $maxColName] = Excel::getSheetMaxRowAndColumn($event);
 
         // A=65
         $maxCol = ord($maxColName) - 64;
