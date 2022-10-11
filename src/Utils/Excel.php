@@ -23,11 +23,67 @@ class Excel
         return $sheet;
     }
 
-    public static function getSheetMaxRowAndColumn(Event $event): array
+    public static function getSheetMaxRowAndColumnInfo(Event $event): array
     {
         $sheet = Excel::getSheet($event);
 
-        return $sheet->getHighestRowAndColumn();
+        ['row' => $maxRow, 'column' => $maxColName] = $sheet->getHighestRowAndColumn();
+
+        // maxRow, maxCol 从 1 开始
+        $maxCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($maxColName);
+        // A=65
+        $maxColumnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($maxCol);
+
+        return [
+            'maxRow' => $maxRow, 
+            'maxCol' => $maxCol, 
+            'maxColumnLetter' => $maxColumnLetter,
+        ];
+    }
+
+    public static function getSheetCellNameByRowAndColumn(int $col, int $row)
+    {
+        $columnLetter = Excel::getSheetColumnLetter($col);
+
+        $cell = "{$columnLetter}{$row}";
+
+        return [
+            'columnLetter' => $columnLetter,
+            'cell' => $cell,
+            'row' => $row,
+        ];
+    }
+
+    public static function getSheetColumnLetter(int $col)
+    {
+        $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+        
+        return $columnLetter;
+    }
+
+    public static function handleAllCell(Event $event, callable $callable)
+    {
+        $sheet = Excel::getSheet($event);
+
+        $sheetInfo = Excel::getSheetMaxRowAndColumnInfo($event);
+
+        foreach (range(0, $sheetInfo['maxRow']) as $row) {
+            foreach (range(1, $sheetInfo['maxCol']) as $col) {
+                $cellInfo = Excel::getSheetCellNameByRowAndColumn($col, $row);
+
+                $callable($event, $sheet, $sheetInfo, $cellInfo);
+            }
+        }
+
+        $backTrace = debug_backtrace(2, 2);
+        $callFunctionName = $backTrace[1]['function'];
+
+        info(sprintf("%s: 最大单元格为 %s, 最大列: %s 最大行号: %s",
+            $callFunctionName,
+            $cellInfo['cell'],
+            $sheetInfo['maxCol'],
+            $sheetInfo['maxRow']
+        ));
     }
 
     /**
@@ -41,40 +97,25 @@ class Excel
      */
     public static function handleCalculateSheet(Event $event)
     {
-        $sheet = Excel::getSheet($event);
+        Excel::handleAllCell($event, function ($event, $sheet, $sheetInfo, $cellInfo) {
+            try {
+                $calcValue = $sheet->getCell($cellInfo['cell'])->getCalculatedValue();
+                $newValue = $calcValue;
+            } catch (\Throwable $e) {
+                $value = $sheet->getCell($cellInfo['cell'])->getValue();
 
-        ['row' => $maxRow, 'column' => $maxColName] = Excel::getSheetMaxRowAndColumn($event);
+                info("获取单元格 {$cellInfo['cell']} 计算结果错误", [
+                    'code' => $e->getCode(),
+                    'message' => $e->getMessage(),
+                    'cell' => $cellInfo['cell'],
+                    'origin_value' => $value,
+                ]);
 
-        // A=65
-        $maxCol = ord($maxColName) - 64;
-        $maxColName = chr($maxCol + 65);
-
-        foreach (range(0, $maxRow) as $row) {
-            foreach (range(0, $maxCol) as $col) {
-                $colName = chr($col + 65);
-                $cell = "{$colName}{$row}";
-
-                try {
-                    $calcValue = $sheet->getCell($cell)->getCalculatedValue();
-                    $newValue = $calcValue;
-                } catch (\Throwable $e) {
-                    $value = $sheet->getCell($cell)->getValue();
-
-                    info("获取单元格 {$cell} 计算结果错误", [
-                        'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
-                        'cell' => $cell,
-                        'origin_value' => $value,
-                    ]);
-
-                    $newValue = $value;
-                }
-
-                $sheet->getCell($cell)->setValue($newValue);
+                $newValue = $value;
             }
-        }
 
-        info("handleCalculateSheet: 最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
+            $sheet->getCell($cellInfo['cell'])->setValue($newValue);
+        });
     }
 
     /**
@@ -158,53 +199,36 @@ class Excel
      */
     public static function handleRequireCellTextColorForRedAndHyperLink(Event $event)
     {
-        $sheet = Excel::getSheet($event);
+        Excel::handleAllCell($event, function ($event, $sheet, $sheetInfo, $cellInfo) {
+            // 设置列宽 autoSize
+            $sheet->getColumnDimension($cellInfo['columnLetter'])->setAutoSize(true);
 
-        ['row' => $maxRow, 'column' => $maxColName] = Excel::getSheetMaxRowAndColumn($event);
+            try {
+                $calcValue = $sheet->getCell($cellInfo['cell'])->getCalculatedValue();
+                $newValue = $calcValue;
+            } catch (\Throwable $e) {
+                $value = $sheet->getCell($cellInfo['cell'])->getValue();
 
-        // A=65
-        $maxCol = ord($maxColName) - 64;
-        $maxColName = chr($maxCol + 65);
+                info("获取单元格 {$cellInfo['cell']} 计算结果错误", [
+                    'code' => $e->getCode(),
+                    'message' => $e->getMessage(),
+                    'cell' => $cellInfo['cell'],
+                    'origin_value' => $value,
+                ]);
 
-        foreach (range(0, $maxRow) as $row) {
-            foreach (range(0, $maxCol) as $col) {
-                $columnLetter = chr($col + 65);
-                $cell = "{$columnLetter}{$row}";
-
-                // 设置列宽 autoSize
-                $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
-
-                try {
-                    $calcValue = $sheet->getCell($cell)->getCalculatedValue();
-                    $newValue = $calcValue;
-                } catch (\Throwable $e) {
-                    $value = $sheet->getCell($cell)->getValue();
-
-                    info("获取单元格 {$cell} 计算结果错误", [
-                        'code' => $e->getCode(),
-                        'message' => $e->getMessage(),
-                        'cell' => $cell,
-                        'origin_value' => $value,
-                    ]);
-
-                    $newValue = $value;
-                }
-
-                $newValue = $sheet->getCell($cell)->getValue();
-
-                if (str_contains($newValue ?? '', '*')) {
-                    $sheet->getStyle($cell)->getFont()->getColor()->setARGB(Color::COLOR_RED);
-                }
-
-                if (str_contains($newValue ?? '', '://')) {
-                    Excel::cellAddHyperLink($event, $cell);
-                }
-
-                $sheet->getCell($cell)->setValue($newValue);
+                $newValue = $value;
             }
-        }
 
-        info("handleRequireCellTextColorForRedAndHyperLink: 最大单元格为 {$cell}, 最大列: {$maxColName} 最大行号: {$maxRow}");
+            if (str_contains($newValue ?? '', '*')) {
+                $sheet->getStyle($cellInfo['cell'])->getFont()->getColor()->setARGB(Color::COLOR_RED);
+            }
+
+            if (str_contains($newValue ?? '', '://')) {
+                Excel::cellAddHyperLink($event, $cellInfo['cell']);
+            }
+
+            $sheet->getCell($cellInfo['cell'])->setValue($newValue);
+        });
     }
 
     /**
