@@ -200,8 +200,8 @@ class Excel
     public static function handleRequireCellTextColorForRedAndHyperLink(Event $event)
     {
         Excel::handleAllCell($event, function ($event, $sheet, $sheetInfo, $cellInfo) {
-            // 设置列宽 autoSize
-            $sheet->getColumnDimension($cellInfo['columnLetter'])->setAutoSize(true);
+            // 设置关闭自动列宽 autoSize
+            $sheet->getColumnDimension($cellInfo['columnLetter'])->setAutoSize(false);
 
             try {
                 $calcValue = $sheet->getCell($cellInfo['cell'])->getCalculatedValue();
