@@ -402,7 +402,7 @@ class Excel
         $titleStyle = array_merge([
             'font' => [
                 'bold' => true,
-                'size' => 14,
+                'size' => 11,
             ],
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
