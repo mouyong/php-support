@@ -12,7 +12,7 @@ if (! function_exists('tap')) {
     {
         if (is_null($callback)) {
             if (class_exists(\Illuminate\Support\HigherOrderTapProxy::class)) {
-                return new \HigherOrderTapProxy\HigherOrderTapProxy($value);
+                return new \Illuminate\Support\HigherOrderTapProxy($value);
             }
 
             return new \ZhenMu\Support\Utils\HigherOrderTapProxy($value);
