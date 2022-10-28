@@ -136,7 +136,7 @@ class File
     }
 
     /**
-     * Get the mime-type of a given file.
+     * Get the mime-type of a given content.
      *
      * @param  string  $path
      * @return string|false
