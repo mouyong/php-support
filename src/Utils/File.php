@@ -130,7 +130,7 @@ class File
      * @param  string  $path
      * @return string|false
      */
-    public function mimeTypeFromPath($path)
+    public static function mimeTypeFromPath($path)
     {
         return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
     }
@@ -141,7 +141,7 @@ class File
      * @param  string  $path
      * @return string|false
      */
-    public function mimeTypeFromContent($content)
+    public static function mimeTypeFromContent($content)
     {
         return finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
     }
