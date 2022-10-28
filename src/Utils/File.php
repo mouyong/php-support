@@ -123,4 +123,26 @@ class File
 
         return '';
     }
+
+    /**
+     * Get the mime-type of a given file.
+     *
+     * @param  string  $path
+     * @return string|false
+     */
+    public function mimeTypeFromPath($path)
+    {
+        return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
+    }
+
+    /**
+     * Get the mime-type of a given file.
+     *
+     * @param  string  $path
+     * @return string|false
+     */
+    public function mimeTypeFromContent($content)
+    {
+        return finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
+    }
 }
