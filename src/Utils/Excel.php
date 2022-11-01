@@ -203,12 +203,16 @@ class Excel
             // 设置关闭自动列宽 autoSize
             $sheet->getColumnDimension($cellInfo['columnLetter'])->setAutoSize(false);
 
-            try {
-                $calcValue = $sheet->getCell($cellInfo['cell'])->getCalculatedValue();
-                $newValue = $calcValue;
-            } catch (\Throwable $e) {
-                $value = $sheet->getCell($cellInfo['cell'])->getValue();
+            $value = $sheet->getCell($cellInfo['cell'])->getValue();
 
+            try {
+                if (str_contains($value, "'")) {
+                    $newValue = str_replace("'", '', $value);
+                } else {
+                    $calcValue = $sheet->getCell($cellInfo['cell'])->getCalculatedValue();
+                    $newValue = $calcValue;
+                }
+            } catch (\Throwable $e) {
                 info("获取单元格 {$cellInfo['cell']} 计算结果错误", [
                     'code' => $e->getCode(),
                     'message' => $e->getMessage(),
@@ -430,7 +434,7 @@ class Excel
     {
         if (!str_starts_with($format, '=')) {
             $value = [$format];
-            $format = '="%s"';
+            $format = '="\'%s\'"';
         }
 
         if (!$value) {
