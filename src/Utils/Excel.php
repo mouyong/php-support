@@ -174,17 +174,17 @@ class Excel
             return null;
         }
 
-        if (!Str::isPureInt($datetime)) {
-            $datetime = match (true) {
-                default => null,
-                str_contains($datetime, '-') && str_contains($datetime, ':') => Carbon::createFromFormat($soruceFormat, $datetime)->format($format),
-                str_contains($datetime, '/') && !str_contains($datetime, ':') => Carbon::createFromDate($datetime)->format($format),
-            };
-
-            return $datetime;
+        if (Str::isPureInt($datetime)) {
+            return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($datetime)?->format($format);
         }
 
-        return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($datetime)?->format($format);
+        $datetime = match (true) {
+            default => null,
+            str_contains($datetime, '-') && str_contains($datetime, ':') => Carbon::createFromFormat($soruceFormat, $datetime)->format($format),
+            str_contains($datetime, '/') && !str_contains($datetime, ':') => Carbon::createFromDate($datetime)->format($format),
+        };
+
+        return $datetime;
     }
 
     /**
