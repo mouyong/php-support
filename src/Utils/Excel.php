@@ -174,7 +174,7 @@ class Excel
             return null;
         }
 
-        if (is_string($datetime)) {
+        if (!Str::isPureInt($datetime)) {
             $datetime = match (true) {
                 default => null,
                 str_contains($datetime, '-') && str_contains($datetime, ':') => Carbon::createFromFormat($soruceFormat, $datetime)->format($format),
