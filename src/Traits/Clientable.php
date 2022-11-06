@@ -49,6 +49,26 @@ trait Clientable
 
         return $data;
     }
+    
+    public function paginate()
+    {
+        if (! data_get($this->result, 'data.paginate', false)) {
+            return null;
+        }
+
+        $paginate = new LengthAwarePaginator(
+            items: data_get($this->result, 'data'),
+            total: data_get($this->result, 'meta.total'),
+            perPage: data_get($this->result, 'meta.page_size'),
+            currentPage: data_get($this->result, 'meta.current_page'),
+        );
+
+        $paginate
+            ->withPath('/'.\request()->path())
+            ->withQueryString();
+
+        return $paginate;
+    }
 
     public function unwrapRequests(array $requests)
     {
