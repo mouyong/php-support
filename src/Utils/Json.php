@@ -39,7 +39,7 @@ class Json
 
     public function encode(?array $data = null, $options = null)
     {
-        $defaultOptions = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
+        $defaultOptions = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK| JSON_PRETTY_PRINT;
 
         if ($options) {
             $options = $defaultOptions | $options;
