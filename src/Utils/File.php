@@ -152,7 +152,6 @@ class File
     public function ensureSavePathExists(string $dirpath)
     {
         if (!file_exists($dirpath)) {
-            \info('创建目录: ' . $dirpath);
             mkdir($dirpath, 0755, true);
         }
 
