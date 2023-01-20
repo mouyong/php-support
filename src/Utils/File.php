@@ -149,7 +149,7 @@ class File
     /**
      * Ensure Filepath Exists
      */
-    public function ensureSavePathExists(string $dirpath)
+    public function ensurePathExists(string $dirpath)
     {
         if (!file_exists($dirpath)) {
             mkdir($dirpath, 0755, true);
