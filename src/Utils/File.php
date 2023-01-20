@@ -86,7 +86,7 @@ class File
      *
      * @return string|false
      */
-    public static function getStreamExt($stream)
+    public static function getStreamExt(string $stream)
     {
         $ext = self::getExtBySignature($stream);
 
@@ -111,7 +111,7 @@ class File
      *
      * @return string
      */
-    public static function getExtBySignature($stream)
+    public static function getExtBySignature(string $stream)
     {
         $prefix = strval(bin2hex(mb_strcut($stream, 0, 10)));
 
@@ -130,7 +130,7 @@ class File
      * @param  string  $path
      * @return string|false
      */
-    public static function mimeTypeFromPath($path)
+    public static function mimeTypeFromPath(string $path)
     {
         return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $path);
     }
@@ -141,8 +141,21 @@ class File
      * @param  string  $path
      * @return string|false
      */
-    public static function mimeTypeFromContent($content)
+    public static function mimeTypeFromContent(string $content)
     {
         return finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content);
+    }
+
+    /**
+     * Ensure Filepath Exists
+     */
+    public function ensureSavePathExists(string $dirpath)
+    {
+        if (!file_exists($dirpath)) {
+            \info('创建目录: ' . $dirpath);
+            mkdir($dirpath, 0755, true);
+        }
+
+        return $dirpath;
     }
 }
