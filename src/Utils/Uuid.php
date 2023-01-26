@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\DB;
 
 class Uuid
 {
-    public static function uuid($hex = true)
+    public static function uuid($hex = false)
     {
         if ($hex) {
-            return \Ramsey\Uuid\Uuid::uuid4()->getHex()->toString();
+            return \Ramsey\Uuid\Uuid::uuid4()->getHex()->toString(); // like: 6b2092378b014528b30b4a9b5fab3ba7
         }
 
-        return \Ramsey\Uuid\Uuid::uuid4()->toString();
+        return \Ramsey\Uuid\Uuid::uuid4()->toString(); // mysql uuid, like: 6b209237-8b01-4528-b30b-4a9b5fab3ba7
     }
     
     public static function getCurrentSerialNumber(string $modelClass, $serialNumberField = 'serial_number'): int
