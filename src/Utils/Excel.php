@@ -145,6 +145,7 @@ class Excel
             // can be call after handleCalculateSheet, will auto calcute cell value
             // this line is fallback if not call Excel::handleCalculateSheet($event)
             $newValue = preg_replace("/=\"(.*)\"/", '\1', $value);
+            $newValue = str_replace('-', '', $newValue);
             if (!empty($newValue)) {
                 $newValue = trim($newValue);
             }
