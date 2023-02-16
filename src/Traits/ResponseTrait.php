@@ -100,7 +100,11 @@ trait ResponseTrait
         }
 
         $data = $data ?: null;
-        $res = compact('err_code', 'err_msg', 'data') + array_filter(compact('meta'));
+        $res = [
+            'err_code' => $err_code,
+            'err_msg' => $err_msg,
+            'data' => $data,
+        ] + array_filter(compact('meta'));
 
         return \response(
             \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT),
@@ -114,7 +118,11 @@ trait ResponseTrait
     public function fail($err_msg = 'unknown error', $err_code = 400, $data = [], $headers = [])
     {
         if (! \request()->wantsJson()) {
-            $err_msg = \json_encode(compact('err_code', 'err_msg', 'data'), \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT);
+            $err_msg = \json_encode([
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ], \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT);
             if (!array_key_exists($err_code, Response::$statusTexts)) {
                 $err_code = 500;
             }
