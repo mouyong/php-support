@@ -9,6 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 trait ResponseTrait
 {
+    public static $responseCodeKey = 1; // 1:code msg、2:code message、3:err_code err_msg、errcode errmsg
+
+    public static function setResponseCodeKey(int $responseCodeKey = 1)
+    {
+        ResponseTrait::$responseCodeKey = $responseCodeKey;
+    }
+
     public static function string2utf8($string = '')
     {
         if (empty($string)) {
@@ -100,11 +107,36 @@ trait ResponseTrait
         }
 
         $data = $data ?: null;
-        $res = [
-            'err_code' => $err_code,
-            'err_msg' => $err_msg,
-            'data' => $data,
-        ] + array_filter(compact('meta'));
+
+        $res = match (ResponseTrait::$responseCodeKey) {
+            default => [
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ],
+            1 => [
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ],
+            2 => [
+                'code' => $err_code,
+                'message' => $err_msg,
+                'data' => $data,
+            ],
+            3 => [
+                'code' => $err_code,
+                'msg' => $err_msg,
+                'data' => $data,
+            ],
+            4 => [
+                'errcode' => $err_code,
+                'errmsg' => $err_msg,
+                'data' => $data,
+            ],
+        };
+        
+        $res = $res + array_filter(compact('meta'));
 
         return \response(
             \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT),
@@ -117,12 +149,36 @@ trait ResponseTrait
 
     public function fail($err_msg = 'unknown error', $err_code = 400, $data = [], $headers = [])
     {
-        if (! \request()->wantsJson()) {
-            $err_msg = \json_encode([
+        $res = match (ResponseTrait::$responseCodeKey) {
+            default => [
                 'err_code' => $err_code,
                 'err_msg' => $err_msg,
                 'data' => $data,
-            ], \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT);
+            ],
+            1 => [
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ],
+            2 => [
+                'code' => $err_code,
+                'message' => $err_msg,
+                'data' => $data,
+            ],
+            3 => [
+                'code' => $err_code,
+                'msg' => $err_msg,
+                'data' => $data,
+            ],
+            4 => [
+                'errcode' => $err_code,
+                'errmsg' => $err_msg,
+                'data' => $data,
+            ],
+        };
+
+        if (! \request()->wantsJson()) {
+            $err_msg = \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT);
             if (!array_key_exists($err_code, Response::$statusTexts)) {
                 $err_code = 500;
             }
