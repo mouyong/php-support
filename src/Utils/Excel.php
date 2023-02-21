@@ -137,7 +137,7 @@ class Excel
         $num = 0;
         foreach ($row as $key => $value) {
             $rowKey = str_replace($replaceFlag, $targetFlag, $key);
-            if (empty($rowKey)) {
+            if ($rowKey !== false) {
                 $rowKey = trim($rowKey);
                 $rowKey = $rowKey ?: $num;
             }
@@ -148,6 +148,7 @@ class Excel
             if (strlen($newValue) == 1 && str_contains($newValue, '-')) {
                 $newValue = str_replace('-', '', $newValue);
             }
+
             if (!empty($newValue)) {
                 $newValue = trim($newValue);
             }
