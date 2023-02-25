@@ -246,11 +246,15 @@ trait DataTime
     /**
      * 计算截止日期剩余时间
      *
-     * @param  string $endTimeString
-     * @return int
+     * @param  null|string $endTimeString
+     * @return null|int
      */
-    public static function remainTime(string $endTimeString)
+    public static function remainTime(?string $endTimeString)
     {
+        if (!$endTimeString) {
+            return null;
+        }
+
         $endTime = strtotime($endTimeString);
         $now = time();
 
