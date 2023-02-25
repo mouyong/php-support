@@ -6,18 +6,17 @@ trait ModelResultTrait
 {
     public function registerResultToBuilder()
     {
-        \Illuminate\Database\Eloquent\Builder::macro('result', $paginate = function () {
-            $namespace = request()->route()->getAction('namespace');
+        \Illuminate\Database\Eloquent\Builder::macro('result', $paginate = function ($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+            $columns = request('columns', $columns);
         
-            if (!request('page') || request('export')) {
-                return $this->get(request('columns', ['*']));
+            if (!$perPage && (!request($pageName) || request('export'))) {
+                return $this->get($columns);
             }
         
-            if (\Illuminate\Support\Str::contains($namespace, 'App\Http\Controllers\Admin')) {
-                return $this->paginate(request('per_page', 20) <= 100 ? request('per_page', 20) : 100, request('columns', ['*']));
-            }
-        
-            return $this->paginate(request('per_page', 20) <= 100 ? request('per_page', 20) : 100, request('columns', ['*']));
+            $perPage = request('per_page', $perPage) <= 100 ? request('per_page', $perPage) : 100;
+
+            return $this->paginate($perPage, $columns);
+
         });
         \Illuminate\Database\Query\Builder::macro('result', $paginate);
     }
