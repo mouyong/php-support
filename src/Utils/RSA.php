@@ -22,6 +22,32 @@ class RSA
         ];
     }
 
+    public static function singleLinePublicKey($publicKey)
+    {
+        $string = str_replace([
+            "-----BEGIN PUBLIC KEY-----\n",
+            "-----END PUBLIC KEY-----",
+        ], '', $publicKey);
+
+        $stringArray = explode("\n", $string);
+        $result = implode('', $stringArray);
+
+        return $result;
+    }
+
+    public static function singleLinePrivateKey($privateKey)
+    {
+        $string = str_replace([
+            "-----BEGIN PRIVATE KEY-----\n",
+            "-----END PRIVATE KEY-----",
+        ], '', $privateKey);
+
+        $stringArray = explode("\n", $string);
+        $result = implode('', $stringArray);
+
+        return $result;
+    }
+
     public static function normalPublicKey($publicKey)
     {
         $fKey = "-----BEGIN PUBLIC KEY-----\n";
