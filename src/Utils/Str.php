@@ -4,6 +4,38 @@ namespace ZhenMu\Support\Utils;
 
 class Str
 {
+    // string to hex
+    public static function stringToHex(?string $string)
+    {
+        if (!$string) {
+            return null;
+        }
+
+        $hex = '';
+        for ($i=0; $i < strlen($string); $i++){
+            $ord = ord($string[$i]);
+            $hexCode = dechex($ord);
+            $hex .= substr('0'.$hexCode, -2);
+        }
+
+        return $hex;
+    }
+
+    // hex to string
+    public static function hexToString(?string $hex)
+    {
+        if (!$hex) {
+            return null;
+        }
+
+        $string = '';
+        for ($i=0; $i < strlen($hex); $i+=2){
+            $string .= chr(hexdec($hex[$i].$hex[$i+1]));
+        }
+
+        return $string;
+    }
+    
     // email
     public static function maskEmail(?string $email = null): ?string
     {
