@@ -242,4 +242,77 @@ trait DataTime
     public static function startTimeToEndTime()
     {
     }
+
+    /**
+     * 计算截止日期剩余时间
+     *
+     * @param  string $endTimeString
+     * @return int
+     */
+    public static function remainTime(string $endTimeString)
+    {
+        $endTime = strtotime($endTimeString);
+        $now = time();
+
+        $remainTime = 0;
+        if ($endTime > time()) {
+            $remainTime = $endTime - $now;
+        }
+
+        return $remainTime;
+    }
+
+    /**
+     * 剩余时间秒数转换为人性化时间
+     *
+     * @param  null|string|integer $endTimeOrRemainSeconds
+     * @return null|string
+     */
+    public static function secondsToTime(mixed $endTimeOrRemainSeconds)
+    {
+        if (is_null($endTimeOrRemainSeconds)) {
+            return null;;
+        }
+        
+        if (is_string($endTimeOrRemainSeconds)) {
+            $seconds = static::remainTime($endTimeOrRemainSeconds);
+        } else if (is_int($endTimeOrRemainSeconds)) {
+            $seconds = $endTimeOrRemainSeconds;
+        }
+        
+        $years = floor($seconds / 31536000);
+        $months = floor(($seconds - ($years * 31536000)) / 2592000);
+        $days = floor(($seconds - ($years * 31536000) - ($months * 2592000)) / 86400);
+        $hours = floor(($seconds - ($years * 31536000) - ($months * 2592000) - ($days * 86400)) / 3600);
+        $minutes = floor(($seconds - ($years * 31536000) - ($months * 2592000) - ($days * 86400) - ($hours * 3600)) / 60);
+        $seconds = ($seconds - ($years * 31536000) - ($months * 2592000) - ($days * 86400) - ($hours * 3600) - ($minutes * 60));
+        
+        $timeString = "";
+        
+        if($years > 0) {
+            $timeString .= $years . "年";
+        }
+        
+        if($months > 0) {
+            $timeString .= $months . "个月";
+        }
+        
+        if($days > 0) {
+            $timeString .= $days . "天";
+        }
+        
+        if($hours > 0) {
+            $timeString .= $hours . "小时";
+        }
+        
+        if($minutes > 0) {
+            $timeString .= $minutes . "分钟";
+        }
+        
+        if($seconds > 0) {
+            $timeString .= $seconds . "秒";
+        }
+        
+        return $timeString;
+    }
 }
