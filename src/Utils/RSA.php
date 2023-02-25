@@ -72,6 +72,57 @@ class RSA
         return $fKey;
     }
 
+    public static function chunkEncrypt($data, $publicKey, $keySize = 2048)
+    {
+        if (!$data) {
+            return null;
+        }
+
+        if (!is_string($data)) {
+            $data = json_encode($data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        if (str_contains($publicKey, "PUBLIC") === false) {
+            $publicKey = RSA::normalPublicKey($publicKey); // 格式化公钥为标准的 public key
+        }
+
+        $plaintext = $data;
+        $chunkSize = $keySize / 8 - 11;
+
+        $output = "";
+        while ($plaintext) {
+            $chunk = substr($plaintext, 0, $chunkSize);
+            $plaintext = substr($plaintext, $chunkSize);
+            openssl_public_encrypt($chunk, $encrypted, $publicKey);
+            $output .= $encrypted;
+        }
+
+        return Str::stringToHex($output);
+    }
+
+    public static function chunkDecrypt($data, $privateKey, $keySize = 2048)
+    {
+        if (!$data) {
+            return null;
+        }
+
+        if (str_contains($privateKey, "PRIVATE") === false) {
+            $privateKey = RSA::normalPrivateKey($privateKey); // 格式化私钥为标准的 private key
+        }
+
+        $output = Str::hexToString($data);
+        
+        $plaintext = "";
+        while ($output) {
+            $chunk = substr($output, 0, $keySize / 8);
+            $output = substr($output, $keySize / 8);
+            openssl_private_decrypt($chunk, $decrypted, $privateKey);
+            $plaintext .= $decrypted;
+        }
+
+        return $plaintext;
+    }
+
     public static function encrypt($data, $privateKey)
     {
         if (!$data) {
