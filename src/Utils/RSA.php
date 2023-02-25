@@ -52,7 +52,7 @@ class RSA
     {
         $fKey = "-----BEGIN PUBLIC KEY-----\n";
         $len = strlen($publicKey);
-        for($i = 0; $i < $len; ) {
+        for ($i = 0; $i < $len;) {
             $fKey = $fKey . substr($publicKey, $i, 64) . "\n";
             $i += 64;
         }
@@ -64,7 +64,7 @@ class RSA
     {
         $fKey = "-----BEGIN PRIVATE KEY-----\n";
         $len = strlen($privateKey);
-        for($i = 0; $i < $len; ) {
+        for ($i = 0; $i < $len;) {
             $fKey = $fKey . substr($privateKey, $i, 64) . "\n";
             $i += 64;
         }
@@ -74,27 +74,47 @@ class RSA
 
     public static function encrypt($data, $privateKey)
     {
-        // $privateKey = RSA::normalPrivateKey($privateKey); // 格式化私钥为标准的 private key
+        if (!$data) {
+            return null;
+        }
+
+        if (!is_string($data)) {
+            $data = json_encode($data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        if (str_contains($privateKey, "PRIVATE") === false) {
+            $privateKey = RSA::normalPrivateKey($privateKey); // 格式化私钥为标准的 private key
+        }
 
         $res = openssl_private_encrypt($data, $encrypted, $privateKey);
 
-        if(!$res) {
+        if (!$res) {
             return false;
         }
 
         return Str::stringToHex($encrypted);
     }
 
-    public function decrypt($data, $publicKey)
+    public static function decrypt($data, $publicKey)
     {
-        // $publicKey = RSA::normalPublicKey($publicKey); // 格式化公钥为标准的 public key
+        if (!$data) {
+            return null;
+        }
+
+        if (!is_string($data)) {
+            return false;
+        }
+
+        if (str_contains($publicKey, "PUBLIC") === false) {
+            $publicKey = RSA::normalPublicKey($publicKey); // 格式化公钥为标准的 public key
+        }
 
         // $openssl_pub = openssl_pkey_get_public($publicKey); // 不知道作用，未使用
 
         // 验签
         $resArr = openssl_public_decrypt(Str::hexToString($data), $decrypted, $publicKey);
 
-        if(!$resArr){
+        if (!$resArr) {
             return false;
         }
 
