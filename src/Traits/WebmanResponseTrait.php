@@ -95,7 +95,7 @@ trait WebmanResponseTrait
 
     public function fail($err_msg = 'unknown error', $err_code = 400, $data = [], $headers = [])
     {
-        if (! \request()->wantsJson()) {
+        if (! \request()->expectsJson()) {
             $err_msg = \json_encode(compact('err_code', 'err_msg', 'data'), \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT);
             if (!array_key_exists($err_code, Response::$statusTexts)) {
                 $err_code = 500;
