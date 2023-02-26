@@ -108,3 +108,42 @@ if (!function_exists('curl')) {
         ];
     }
 }
+
+if (!function_exists('p')) {
+    /**
+     * 调试方法
+     * @param array $data [description]
+     */
+    function p($data, $die = 1)
+    {
+        echo "<pre>";
+        print_r($data);
+        echo "</pre>";
+        if ($die) die;
+    }
+}
+
+if (!function_exists('mdump')) {
+    /**
+     * 调试方法
+     * @param array $data [description]
+     */
+    function mdump()
+    {
+        foreach (func_get_args() as $item) {
+            p($item, 0);
+        }
+    }
+}
+
+if (!function_exists('mdd')) {
+    /**
+     * 调试方法
+     * @param array $data [description]
+     */
+    function mdd()
+    {
+        mdump(...func_get_args());
+        die;
+    }
+}
