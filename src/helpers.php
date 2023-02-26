@@ -24,18 +24,18 @@ if (!function_exists('tap')) {
     }
 }
 
-if (!function_exists('sendRequest')) {
+if (!function_exists('curl')) {
     /**
      * Http 请求
-     * 
+     *
      * @param string $url 请求网址
      * @param string $method 请求方式
      * @param array $params 请求参数
      * @param array $headers 请求头
-     * 
-     * @return bool|mixed
+     *
+     * @return bool|array
      */
-    function sendRequest(string $url, string $method = "GET", array $params = [], array $headers = [])
+    function curl(string $url, string $method = "GET", array $params = [], array $headers = [])
     {
         $method = strtoupper($method);
 
