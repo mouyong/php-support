@@ -64,7 +64,7 @@ if (!function_exists('curl')) {
         if(!empty($config['use_cert']) && $config['use_cert'] == true){
 			//设置证书
 			//使用证书：cert 与 key 分别属于两个 .pem 文件
-            if (!empty($config['use_cert']['ssl_cert_path'] && !empty($config['use_cert']['ssl_key_path']) {
+            if (!empty($config['use_cert']['ssl_cert_path']) && !empty($config['use_cert']['ssl_key_path'])) {
                 curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
                 curl_setopt($ch,CURLOPT_SSLCERT, $config['use_cert']['ssl_cert_path']);
                 curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
