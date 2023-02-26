@@ -34,6 +34,11 @@ if (!function_exists('curl')) {
      * @param array $headers 请求头
      *
      * @return bool|array
+     *
+     * @example:
+     *
+     * $resp=curl("http://httpbin.org/ip", 'get', []);
+     * die($resp['data']['response']);
      */
     function curl(string $url, string $method = "GET", array $params = [], array $headers = [])
     {
