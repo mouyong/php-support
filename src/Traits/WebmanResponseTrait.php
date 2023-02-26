@@ -9,6 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 trait WebmanResponseTrait
 {
+    public static $responseCodeKey = 1; // 1:code msg、2:code message、3:err_code err_msg、errcode errmsg
+
+    public static function setResponseCodeKey(int $responseCodeKey = 1)
+    {
+        ResponseTrait::$responseCodeKey = $responseCodeKey;
+    }
+
     public static function string2utf8($string = '')
     {
         if (empty($string)) {
@@ -42,13 +49,31 @@ trait WebmanResponseTrait
         return $this->paginate($paginate);
     }
 
-    public function paginate(\Illuminate\Pagination\LengthAwarePaginator $paginate, ?callable $callable = null)
+    public function paginate($data, ?callable $callable = null)
     {
+        // 处理集合数据
+        if ($data instanceof \Illuminate\Database\Eloquent\Collection) {
+            return $this->success(array_map(function ($item) use ($callable) {
+                if ($callable) {
+                    return $callable($item) ?? $item;
+                }
+
+                return $item;
+            }, $data->all()));
+        }
+
+        // 处理非分页数据
+        if (! $data instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            return $this->success($data);
+        }
+
+        // 处理分页数据
+        $paginate = $data;
         return $this->success([
             'meta' => [
                 'total' => $paginate->total(),
                 'current_page' => $paginate->currentPage(),
-                'per_page' => $paginate->perPage(),
+                'page_size' => $paginate->perPage(),
                 'last_page' => $paginate->lastPage(),
             ],
             'data' => array_map(function ($item) use ($callable) {
@@ -57,7 +82,7 @@ trait WebmanResponseTrait
                 }
 
                 return $item;
-            }, $paginate->items()), 
+            }, $paginate?->items()), 
         ]);
     }
 
@@ -77,12 +102,41 @@ trait WebmanResponseTrait
 
         $err_msg = static::string2utf8($err_msg);
 
-        if ($err_code === 200 && ($config_err_code = config('webman-init-template.response.err_code', 200)) !== $err_code) {
+        if ($err_code === 200 && ($config_err_code = config('laravel-init-template.response.err_code', 200)) !== $err_code) {
             $err_code = $config_err_code;
         }
 
         $data = $data ?: null;
-        $res = compact('err_code', 'err_msg', 'data') + array_filter(compact('meta'));
+
+        $res = match (ResponseTrait::$responseCodeKey) {
+            default => [
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ],
+            1 => [
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ],
+            2 => [
+                'code' => $err_code,
+                'message' => $err_msg,
+                'data' => $data,
+            ],
+            3 => [
+                'code' => $err_code,
+                'msg' => $err_msg,
+                'data' => $data,
+            ],
+            4 => [
+                'errcode' => $err_code,
+                'errmsg' => $err_msg,
+                'data' => $data,
+            ],
+        };
+        
+        $res = $res + array_filter(compact('meta'));
 
         return \response(
             \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT),
@@ -95,8 +149,36 @@ trait WebmanResponseTrait
 
     public function fail($err_msg = 'unknown error', $err_code = 400, $data = [], $headers = [])
     {
-        if (! \request()->expectsJson()) {
-            $err_msg = \json_encode(compact('err_code', 'err_msg', 'data'), \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT);
+        $res = match (ResponseTrait::$responseCodeKey) {
+            default => [
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ],
+            1 => [
+                'err_code' => $err_code,
+                'err_msg' => $err_msg,
+                'data' => $data,
+            ],
+            2 => [
+                'code' => $err_code,
+                'message' => $err_msg,
+                'data' => $data,
+            ],
+            3 => [
+                'code' => $err_code,
+                'msg' => $err_msg,
+                'data' => $data,
+            ],
+            4 => [
+                'errcode' => $err_code,
+                'errmsg' => $err_msg,
+                'data' => $data,
+            ],
+        };
+
+        if (! \request()->exceptsJson()) {
+            $err_msg = \json_encode($res, \JSON_UNESCAPED_SLASHES|\JSON_UNESCAPED_UNICODE|\JSON_PRETTY_PRINT);
             if (!array_key_exists($err_code, Response::$statusTexts)) {
                 $err_code = 500;
             }
@@ -118,20 +200,33 @@ trait WebmanResponseTrait
         //
     }
 
-    public function renderableHandle(\Webman\Http\Request $request, \Throwable $e)
+    public function renderableHandle()
     {
-        if ($e instanceof \Illuminate\Validation\ValidationException) {
-            return $this->fail($e->validator->errors()->first(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        return function (\Throwable $e) {
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                return $this->fail('登录失败，请稍后重试', $e->getCode() ?: config('laravel-init-template.auth.unauthorize_code', 401));
+            }
 
-        if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
-            return $this->fail('404 Data Not Found.', Response::HTTP_NOT_FOUND);
-        }
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return $this->fail($e->validator->errors()->first(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
 
-        if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
-            return $this->fail('404 Url Not Found.', Response::HTTP_NOT_FOUND);
-        }
+            if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                return $this->fail('404 Data Not Found.', Response::HTTP_NOT_FOUND);
+            }
 
-        return $this->fail($e->getMessage(), $e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                return $this->fail('404 Url Not Found.', Response::HTTP_NOT_FOUND);
+            }
+
+//             \info('error', [
+//                 'class' => get_class($e),
+//                 'code' => $e->getCode(),
+//                 'message' => $e->getMessage(),
+//                 'file_line' => sprintf('%s:%s', $e->getFile(), $e->getLine()),
+//             ]);
+
+            return $this->fail($e->getMessage(), $e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR);
+        };
     }
 }
