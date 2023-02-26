@@ -32,6 +32,7 @@ if (!function_exists('curl')) {
      * @param string $method 请求方式
      * @param array $params 请求参数
      * @param array $headers 请求头
+     * @param array $config 请求配置
      *
      * @return bool|array
      *
@@ -40,7 +41,7 @@ if (!function_exists('curl')) {
      * $resp=curl("http://httpbin.org/ip", 'get', []);
      * die($resp['data']['response']);
      */
-    function curl(string $url, string $method = "GET", array $params = [], array $headers = [])
+    function curl(string $url, string $method = "GET", array $params = [], array $headers = [], array $config = [])
     {
         $method = strtoupper($method);
 
@@ -52,15 +53,37 @@ if (!function_exists('curl')) {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36');
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // 要求结果为字符串且输出到屏幕上
 
+        // 设置代理
+        if (!empty($config['proxy']['host']) && !empty($config['proxy']['port'])) {
+            curl_setopt($ch,CURLOPT_PROXY, $config['proxy']['host']);
+            curl_setopt($ch,CURLOPT_PROXYPORT, $config['proxy']['port']);
+        }
+
+        if(!empty($config['use_cert']) && $config['use_cert'] == true){
+			//设置证书
+			//使用证书：cert 与 key 分别属于两个 .pem 文件
+            if (!empty($config['use_cert']['ssl_cert_path'] && !empty($config['use_cert']['ssl_key_path']) {
+                curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
+                curl_setopt($ch,CURLOPT_SSLCERT, $config['use_cert']['ssl_cert_path']);
+                curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
+                curl_setopt($ch,CURLOPT_SSLKEY, $config['use_cert']['ssl_key_path']);
+            }
+		}
+
+        // 设置header
         if (!empty($headers)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
 
         if (stripos($url, "https://") !== FALSE) {
+			curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // 对认证证书来源的检查
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); // 从证书中检查SSL加密算法是否存在
+        } else {
+			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, TRUE);
+			curl_setopt($ch,CURLOPT_SSL_VERIFYHOST, 2);//严格校验
         }
 
         if ($method === 'POST') {
