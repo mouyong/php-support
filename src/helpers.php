@@ -112,6 +112,7 @@ if (!function_exists('curl')) {
 if (!function_exists('p')) {
     /**
      * 调试方法
+     *
      * @param array $data [description]
      */
     function p($data, $die = 1)
@@ -126,6 +127,7 @@ if (!function_exists('p')) {
 if (!function_exists('mdump')) {
     /**
      * 调试方法
+     *
      * @param array $data [description]
      */
     function mdump()
@@ -139,6 +141,7 @@ if (!function_exists('mdump')) {
 if (!function_exists('mdd')) {
     /**
      * 调试方法
+     *
      * @param array $data [description]
      */
     function mdd()
