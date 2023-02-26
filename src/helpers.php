@@ -75,17 +75,31 @@ if (!function_exists('sendRequest')) {
 
         $response = curl_exec($ch);
 
-        if ($response === FALSE) {
-            //echo "cURL Error: " . curl_error($ch);
-            return false;
-        }
-
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
         $httpInfo = array_merge($httpInfo, curl_getinfo($ch));
 
-        curl_close($ch);
+        if ($response === FALSE) {
+            //echo "cURL Error: " . curl_error($ch);
+            return [
+                'code' => 1,
+                'message' => "cURL Error: " . curl_error($ch),
+                'data' => [
+                    'httpCode' => $httpCode,
+                    'httpInfo' => $httpInfo,
+                    'response' => $response,
+                ],
+            ];
+        }
 
-        return $response;
+        curl_close($ch);
+        return [
+            'code' => 0,
+            'message' => 'success',
+            'data' => [
+                'response' => $httpCode,
+                'httpInfo' => $httpInfo,
+                'response' => $response,
+            ],
+        ];
     }
 }
