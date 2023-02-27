@@ -2,7 +2,7 @@
 
 namespace ZhenMu\Support\Traits;
 
-trait DataTime
+trait DateTime
 {
     /**
      * 返回今日开始和结束的时间戳
