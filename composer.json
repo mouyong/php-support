@@ -1,0 +1,37 @@
+{
+    "name": "zhenmu/support",
+    "description": "Php 代码扩展包, 一些常用的 php 代码封装",
+    "keywords": ["support", "mouyong", "zhenmu", "laravel", "webman", "aes", "php", "composer", "xml", "uuid", "url", "state", "file", "tool", "utils", "util"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "mouyong",
+            "email": "my24251325@gmail.com",
+            "homepage": "https://github.com/mouyong",
+            "role": "Creator & Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/plugins-world/php-support/issues",
+        "source": "https://github.com/plugins-world/php-support",
+        "homepage": "https://laravel-workerman.iwnweb.com/d/22-php-composer"
+    },
+    "require": {
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-fileinfo": "*",
+        "ext-simplexml": "*",
+        "league/fractal": "^0.20.1",
+        "ramsey/uuid": "*",
+        "symfony/process": "*",
+        "nelexa/zip": "^4.0"
+    },
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "ZhenMu\\Support\\": "src"
+        }
+    }
+}
